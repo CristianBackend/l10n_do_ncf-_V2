@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Menú principal NCF bajo Facturación/Contabilidad -->
+    <menuitem id="menu_ncf_root"
+              name="NCF"
+              parent="account.menu_finance_configuration"
+              sequence="50"
+              groups="group_ncf_user"/>
+    
+    <!-- Submenú: Tipos de NCF -->
+    <menuitem id="menu_ncf_type"
+              name="Tipos de NCF"
+              parent="menu_ncf_root"
+              action="action_ncf_type"
+              sequence="10"
+              groups="group_ncf_manager"/>
+    
+    <!-- Submenú: Secuencias NCF -->
+    <menuitem id="menu_ncf_sequence"
+              name="Secuencias NCF"
+              parent="menu_ncf_root"
+              action="action_ncf_sequence"
+              sequence="20"
+              groups="group_ncf_manager"/>
+    
+    <!-- Menú de reportes DGII -->
+    <menuitem id="menu_dgii_reports"
+              name="Reportes DGII"
+              parent="account.menu_finance_reports"
+              sequence="100"
+              groups="group_ncf_user"/>
+    
+    <!-- Submenú: Generar Reportes -->
+    <menuitem id="menu_dgii_report_wizard"
+              name="Generar Reportes (606, 607, 608)"
+              parent="menu_dgii_reports"
+              action="action_dgii_report_wizard"
+              sequence="10"/>
+    
+</odoo>

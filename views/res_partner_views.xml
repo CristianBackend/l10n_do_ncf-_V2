@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Extensión de la vista de contacto -->
+    <record id="view_partner_form_ncf" model="ir.ui.view">
+        <field name="name">res.partner.form.ncf</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            
+            <!-- Agregar pestaña de información fiscal RD -->
+            <xpath expr="//notebook" position="inside">
+                <page string="Fiscal RD" name="fiscal_rd" 
+                      invisible="country_id.code != 'DO'">
+                    <group>
+                        <group string="Clasificación Fiscal">
+                            <field name="l10n_do_dgii_tax_payer_type"/>
+                            <field name="l10n_do_ncf_type_id" options="{'no_create': True}"/>
+                        </group>
+                        <group string="Validación DGII">
+                            <field name="l10n_do_rnc_validated" readonly="1"/>
+                            <field name="l10n_do_rnc_validation_date" readonly="1"/>
+                            <button name="action_validate_rnc" 
+                                    string="Validar RNC/Cédula" 
+                                    type="object" 
+                                    class="btn-secondary"
+                                    invisible="not vat"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+            
+        </field>
+    </record>
+    
+    <!-- Agregar campo de tipo contribuyente a la vista de lista -->
+    <record id="view_partner_tree_ncf" model="ir.ui.view">
+        <field name="name">res.partner.tree.ncf</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_tree"/>
+        <field name="arch" type="xml">
+            <field name="vat" position="after">
+                <field name="l10n_do_dgii_tax_payer_type" optional="hide"/>
+            </field>
+        </field>
+    </record>
+    
+</odoo>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Vista Form del Wizard -->
+    <record id="view_dgii_report_wizard_form" model="ir.ui.view">
+        <field name="name">l10n_do_ncf.dgii.report.wizard.form</field>
+        <field name="model">l10n_do_ncf.dgii.report.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Generar Reporte DGII">
+                <group invisible="state == 'generated'">
+                    <group>
+                        <field name="company_id" groups="base.group_multi_company"/>
+                        <field name="report_type"/>
+                    </group>
+                    <group>
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                    </group>
+                </group>
+                <group invisible="state != 'generated'">
+                    <div class="alert alert-success" role="alert">
+                        <strong>¡Reporte generado exitosamente!</strong>
+                        <br/>
+                        Haga clic en "Descargar" para obtener el archivo.
+                    </div>
+                    <field name="file_name" readonly="1"/>
+                </group>
+                <field name="state" invisible="1"/>
+                <footer>
+                    <button name="action_generate_report" string="Generar Reporte" type="object" class="btn-primary" invisible="state == 'generated'"/>
+                    <button name="action_download" string="Descargar" type="object" class="btn-success" invisible="state != 'generated'"/>
+                    <button string="Cerrar" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Acción del Wizard -->
+    <record id="action_dgii_report_wizard" model="ir.actions.act_window">
+        <field name="name">Generar Reportes DGII</field>
+        <field name="res_model">l10n_do_ncf.dgii.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+    
+</odoo>

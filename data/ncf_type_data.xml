@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        <!-- Comprobantes Fiscales Serie B (Físicos) -->
+        
+        <record id="ncf_type_01" model="l10n_do_ncf.type">
+            <field name="name">Factura de Crédito Fiscal</field>
+            <field name="code">01</field>
+            <field name="prefix">B01</field>
+            <field name="is_electronic">False</field>
+            <field name="requires_rnc">True</field>
+            <field name="for_sale">True</field>
+            <field name="for_purchase">True</field>
+            <field name="description">Transacciones entre contribuyentes. Permite sustentar gastos/costos y crédito fiscal de ITBIS. Se reporta en 607 (vendedor) y 606 (comprador).</field>
+        </record>
+        
+        <record id="ncf_type_02" model="l10n_do_ncf.type">
+            <field name="name">Factura de Consumo</field>
+            <field name="code">02</field>
+            <field name="prefix">B02</field>
+            <field name="is_electronic">False</field>
+            <field name="requires_rnc">False</field>
+            <field name="for_sale">True</field>
+            <field name="for_purchase">False</field>
+            <field name="aplica_vencimiento">False</field>
+            <field name="description">Para consumidor final. NO permite crédito fiscal ni deducción ISR. Solo vendedor reporta en 607 (si mayor a RD$250,000). NO APLICA vencimiento de 2 años según Guía DGII.</field>
+        </record>
+        
+        <record id="ncf_type_03" model="l10n_do_ncf.type">
+            <field name="name">Nota de Débito</field>
+            <field name="code">03</field>
+            <field name="prefix">B03</field>
+            <field name="is_electronic">False</field>
+            <field name="requires_rnc">True</field>
+            <field name="for_sale">True</field>
+            <field name="for_purchase">True</field>
+            <field name="description">Modifica comprobantes previos para agregar costos adicionales (intereses mora, fletes, seguros, garantías).</field>
+        </record>
+        
+        <record id="ncf_type_04" model="l10n_do_ncf.type">
+            <field name="name">Nota de Crédito</field>
+            <field name="code">04</field>
+            <field name="prefix">B04</field>
+            <field name="is_electronic">False</field>
+            <field name="requires_rnc">True</field>
+            <field name="for_sale">True</field>
+            <field name="for_purchase">True</field>
+            <field name="aplica_vencimiento">False</field>
+            <field name="description">Para anulaciones, devoluciones, descuentos, bonificaciones o corrección de errores. NO APLICA vencimiento de 2 años según Guía DGII.</field>
+        </record>
+        
+        <record id="ncf_type_11" model="l10n_do_ncf.type">
+            <field name="name">Comprobante de Compras</field>
+            <field name="code">11</field>
+            <field name="prefix">B11</field>
+            <field name="is_electronic">False</field>
+            <field name="requires_rnc">False</field>
+            <field name="for_sale">False</field>
+            <field name="for_purchase">True</field>
+            <field name="description">Para compras a proveedores NO registrados en DGII (antes "proveedor informal"). El comprador lo emite y reporta en 606.</field>
+        </record>
+        
+        <record id="ncf_type_12" model="l10n_do_ncf.type">
+            <field name="name">Registro Único de Ingresos</field>
+            <field name="code">12</field>
+            <field name="prefix">B12</field>
+            <field name="is_electronic">False</field>
+            <field name="requires_rnc">False</field>
+            <field name="for_sale">True</field>
+            <field name="for_purchase">False</field>
+            <field name="aplica_vencimiento">False</field>
+            <field name="description">Resumen de transacciones diarias a consumidor final, para ventas exentas de ITBIS. Requiere autorización presencial DGII. NO APLICA vencimiento de 2 años según Guía DGII.</field>
+        </record>
+        
+        <record id="ncf_type_13" model="l10n_do_ncf.type">
+            <field name="name">Gastos Menores</field>
+            <field name="code">13</field>
+            <field name="prefix">B13</field>
+            <field name="is_electronic">False</field>
+            <field name="requires_rnc">False</field>
+            <field name="for_sale">False</field>
+            <field name="for_purchase">True</field>
+            <field name="description">Para gastos del personal (consumibles, pasajes, peajes, transporte). NO se transparenta ITBIS. Emitido a nombre del propio contribuyente.</field>
+        </record>
+        
+        <record id="ncf_type_14" model="l10n_do_ncf.type">
+            <field name="name">Regímenes Especiales</field>
+            <field name="code">14</field>
+            <field name="prefix">B14</field>
+            <field name="is_electronic">False</field>
+            <field name="requires_rnc">True</field>
+            <field name="for_sale">True</field>
+            <field name="for_purchase">True</field>
+            <field name="description">Para zonas francas y entidades con régimen especial de tributación por leyes especiales o convenios del Congreso.</field>
+        </record>
+        
+        <record id="ncf_type_15" model="l10n_do_ncf.type">
+            <field name="name">Gubernamental</field>
+            <field name="code">15</field>
+            <field name="prefix">B15</field>
+            <field name="is_electronic">False</field>
+            <field name="requires_rnc">True</field>
+            <field name="for_sale">True</field>
+            <field name="for_purchase">False</field>
+            <field name="description">Para ventas al Gobierno Central, instituciones descentralizadas, autónomas, seguridad social y entidades gubernamentales sin actividad comercial.</field>
+        </record>
+        
+        <record id="ncf_type_16" model="l10n_do_ncf.type">
+            <field name="name">Exportaciones</field>
+            <field name="code">16</field>
+            <field name="prefix">B16</field>
+            <field name="is_electronic">False</field>
+            <field name="requires_rnc">False</field>
+            <field name="for_sale">True</field>
+            <field name="for_purchase">False</field>
+            <field name="description">Para ventas de bienes fuera del territorio nacional. Usado por exportadores, zonas francas industriales y comerciales.</field>
+        </record>
+        
+        <record id="ncf_type_17" model="l10n_do_ncf.type">
+            <field name="name">Pagos al Exterior</field>
+            <field name="code">17</field>
+            <field name="prefix">B17</field>
+            <field name="is_electronic">False</field>
+            <field name="requires_rnc">False</field>
+            <field name="for_sale">False</field>
+            <field name="for_purchase">True</field>
+            <field name="description">Para pagos a no residentes fiscales. Requiere retención del 27% ISR. Se reporta en 606 y 609.</field>
+        </record>
+        
+        <!-- Comprobantes Fiscales Electrónicos Serie E (e-CF) -->
+        
+        <record id="ncf_type_e31" model="l10n_do_ncf.type">
+            <field name="name">Factura de Crédito Fiscal Electrónica</field>
+            <field name="code">31</field>
+            <field name="prefix">E31</field>
+            <field name="is_electronic">True</field>
+            <field name="requires_rnc">True</field>
+            <field name="for_sale">True</field>
+            <field name="for_purchase">True</field>
+            <field name="description">Versión electrónica de B01. Requiere firma digital y validación DGII.</field>
+        </record>
+        
+        <record id="ncf_type_e32" model="l10n_do_ncf.type">
+            <field name="name">Factura de Consumo Electrónica</field>
+            <field name="code">32</field>
+            <field name="prefix">E32</field>
+            <field name="is_electronic">True</field>
+            <field name="requires_rnc">False</field>
+            <field name="for_sale">True</field>
+            <field name="for_purchase">False</field>
+            <field name="aplica_vencimiento">False</field>
+            <field name="description">Versión electrónica de B02. Para consumidor final. NO APLICA vencimiento según Guía DGII.</field>
+        </record>
+        
+        <record id="ncf_type_e33" model="l10n_do_ncf.type">
+            <field name="name">Nota de Débito Electrónica</field>
+            <field name="code">33</field>
+            <field name="prefix">E33</field>
+            <field name="is_electronic">True</field>
+            <field name="requires_rnc">True</field>
+            <field name="for_sale">True</field>
+            <field name="for_purchase">True</field>
+            <field name="description">Versión electrónica de B03.</field>
+        </record>
+        
+        <record id="ncf_type_e34" model="l10n_do_ncf.type">
+            <field name="name">Nota de Crédito Electrónica</field>
+            <field name="code">34</field>
+            <field name="prefix">E34</field>
+            <field name="is_electronic">True</field>
+            <field name="requires_rnc">True</field>
+            <field name="for_sale">True</field>
+            <field name="for_purchase">True</field>
+            <field name="aplica_vencimiento">False</field>
+            <field name="description">Versión electrónica de B04. NO APLICA vencimiento según Guía DGII.</field>
+        </record>
+        
+        <record id="ncf_type_e41" model="l10n_do_ncf.type">
+            <field name="name">Comprobante de Compras Electrónico</field>
+            <field name="code">41</field>
+            <field name="prefix">E41</field>
+            <field name="is_electronic">True</field>
+            <field name="requires_rnc">False</field>
+            <field name="for_sale">False</field>
+            <field name="for_purchase">True</field>
+            <field name="description">Versión electrónica de B11.</field>
+        </record>
+        
+        <record id="ncf_type_e43" model="l10n_do_ncf.type">
+            <field name="name">Gastos Menores Electrónico</field>
+            <field name="code">43</field>
+            <field name="prefix">E43</field>
+            <field name="is_electronic">True</field>
+            <field name="requires_rnc">False</field>
+            <field name="for_sale">False</field>
+            <field name="for_purchase">True</field>
+            <field name="description">Versión electrónica de B13.</field>
+        </record>
+        
+        <record id="ncf_type_e44" model="l10n_do_ncf.type">
+            <field name="name">Regímenes Especiales Electrónico</field>
+            <field name="code">44</field>
+            <field name="prefix">E44</field>
+            <field name="is_electronic">True</field>
+            <field name="requires_rnc">True</field>
+            <field name="for_sale">True</field>
+            <field name="for_purchase">True</field>
+            <field name="description">Versión electrónica de B14.</field>
+        </record>
+        
+        <record id="ncf_type_e45" model="l10n_do_ncf.type">
+            <field name="name">Gubernamental Electrónico</field>
+            <field name="code">45</field>
+            <field name="prefix">E45</field>
+            <field name="is_electronic">True</field>
+            <field name="requires_rnc">True</field>
+            <field name="for_sale">True</field>
+            <field name="for_purchase">False</field>
+            <field name="description">Versión electrónica de B15.</field>
+        </record>
+        
+        <record id="ncf_type_e46" model="l10n_do_ncf.type">
+            <field name="name">Comprobante de Exportaciones Electrónico</field>
+            <field name="code">46</field>
+            <field name="prefix">E46</field>
+            <field name="is_electronic">True</field>
+            <field name="requires_rnc">False</field>
+            <field name="for_sale">True</field>
+            <field name="for_purchase">False</field>
+            <field name="description">Versión electrónica de B16.</field>
+        </record>
+        
+        <record id="ncf_type_e47" model="l10n_do_ncf.type">
+            <field name="name">Comprobante para Pagos al Exterior Electrónico</field>
+            <field name="code">47</field>
+            <field name="prefix">E47</field>
+            <field name="is_electronic">True</field>
+            <field name="requires_rnc">False</field>
+            <field name="for_sale">False</field>
+            <field name="for_purchase">True</field>
+            <field name="description">Versión electrónica de B17.</field>
+        </record>
+        
+    </data>
+</odoo>

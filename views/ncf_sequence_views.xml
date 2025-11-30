@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Vista Tree -->
+    <record id="view_ncf_sequence_tree" model="ir.ui.view">
+        <field name="name">l10n_do_ncf.sequence.tree</field>
+        <field name="model">l10n_do_ncf.sequence</field>
+        <field name="arch" type="xml">
+            <tree string="Secuencias NCF" decoration-danger="state in ('depleted', 'expired')" decoration-warning="available_qty &lt;= warning_threshold and state == 'active'" decoration-muted="state == 'draft'">
+                <field name="ncf_type_id"/>
+                <field name="prefix"/>
+                <field name="range_from"/>
+                <field name="range_to"/>
+                <field name="current_number"/>
+                <field name="next_number"/>
+                <field name="available_qty"/>
+                <field name="warning_threshold" optional="hide"/>
+                <field name="authorization_date"/>
+                <field name="aplica_vencimiento" widget="boolean" optional="show"/>
+                <field name="expiration_date"/>
+                <field name="state" widget="badge" decoration-success="state == 'active'" decoration-warning="state == 'draft'" decoration-danger="state in ('depleted', 'expired')"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </tree>
+        </field>
+    </record>
+    
+    <!-- Vista Form -->
+    <record id="view_ncf_sequence_form" model="ir.ui.view">
+        <field name="name">l10n_do_ncf.sequence.form</field>
+        <field name="model">l10n_do_ncf.sequence</field>
+        <field name="arch" type="xml">
+            <form string="Secuencia NCF">
+                <header>
+                    <button name="action_activate" string="Activar" type="object" class="btn-primary" invisible="state != 'draft'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,active"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_invoices" type="object" class="oe_stat_button" icon="fa-file-text-o">
+                            <span>Facturas</span>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Configuración">
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="ncf_type_id"/>
+                            <field name="prefix" readonly="1"/>
+                            <field name="aplica_vencimiento" readonly="1"/>
+                        </group>
+                        <group string="Rango Autorizado">
+                            <field name="range_from"/>
+                            <field name="range_to"/>
+                            <field name="authorization_date"/>
+                            <field name="expiration_date" invisible="not aplica_vencimiento"/>
+                            <div colspan="2" invisible="aplica_vencimiento" class="alert alert-info">
+                                <strong>ℹ️ Este tipo de NCF no aplica vencimiento</strong> según las guías operativas de DGII.
+                            </div>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Estado Actual">
+                            <field name="current_number"/>
+                            <field name="next_number"/>
+                            <field name="available_qty"/>
+                        </group>
+                        <group string="Alertas">
+                            <field name="warning_threshold"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Vista Search -->
+    <record id="view_ncf_sequence_search" model="ir.ui.view">
+        <field name="name">l10n_do_ncf.sequence.search</field>
+        <field name="model">l10n_do_ncf.sequence</field>
+        <field name="arch" type="xml">
+            <search string="Buscar Secuencias NCF">
+                <field name="name"/>
+                <field name="ncf_type_id"/>
+                <field name="prefix"/>
+                <filter name="active_sequences" string="Activas" domain="[('state', '=', 'active')]"/>
+                <filter name="low_stock" string="Stock Bajo" domain="[('available_qty', '&lt;=', 'warning_threshold')]"/>
+                <filter name="expiring_soon" string="Por Vencer" domain="[('expiration_date', '&lt;=', (context_today() + relativedelta(days=30)).strftime('%Y-%m-%d'))]"/>
+                <group expand="0" string="Agrupar por">
+                    <filter name="group_type" string="Tipo NCF" context="{'group_by': 'ncf_type_id'}"/>
+                    <filter name="group_state" string="Estado" context="{'group_by': 'state'}"/>
+                    <filter name="group_company" string="Compañía" context="{'group_by': 'company_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    
+    <!-- Acción -->
+    <record id="action_ncf_sequence" model="ir.actions.act_window">
+        <field name="name">Secuencias NCF</field>
+        <field name="res_model">l10n_do_ncf.sequence</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'search_default_active_sequences': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Configure sus secuencias de NCF
+            </p>
+            <p>
+                Aquí debe registrar los rangos de NCF autorizados por la DGII.
+                Cada secuencia corresponde a un rango específico de números.
+            </p>
+        </field>
+    </record>
+    
+</odoo>

@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_ncf_type_user,l10n_do_ncf.type user,model_l10n_do_ncf_type,group_ncf_user,1,0,0,0
+access_ncf_type_manager,l10n_do_ncf.type manager,model_l10n_do_ncf_type,group_ncf_manager,1,1,1,1
+access_ncf_sequence_user,l10n_do_ncf.sequence user,model_l10n_do_ncf_sequence,group_ncf_user,1,0,0,0
+access_ncf_sequence_manager,l10n_do_ncf.sequence manager,model_l10n_do_ncf_sequence,group_ncf_manager,1,1,1,1

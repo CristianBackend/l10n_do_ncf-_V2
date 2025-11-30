@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Extensión del reporte de factura para mostrar NCF -->
+    <template id="report_invoice_document_ncf" inherit_id="account.report_invoice_document">
+        
+        <!-- Agregar NCF en el encabezado de la factura -->
+        <xpath expr="//h2" position="after">
+            <div t-if="o.l10n_do_ncf_number" class="row mt-2 mb-2">
+                <div class="col-12">
+                    <strong style="font-size: 14px;">NCF: </strong>
+                    <span style="font-size: 14px; font-weight: bold;" t-field="o.l10n_do_ncf_number"/>
+                    <t t-if="o.l10n_do_ncf_expiration">
+                        <span style="font-size: 11px; color: #666; margin-left: 15px;">
+                            Válido hasta: <span t-field="o.l10n_do_ncf_expiration"/>
+                        </span>
+                    </t>
+                </div>
+            </div>
+            <!-- NCF Afectado para Notas de Crédito/Débito -->
+            <div t-if="o.l10n_do_ncf_origin" class="row mb-2">
+                <div class="col-12">
+                    <strong style="font-size: 12px;">NCF Afectado: </strong>
+                    <span style="font-size: 12px;" t-field="o.l10n_do_ncf_origin"/>
+                </div>
+            </div>
+        </xpath>
+        
+        <!-- Agregar RNC del cliente -->
+        <xpath expr="//address[@t-field='o.partner_id']" position="after">
+            <div t-if="o.partner_id.vat" class="mt-1">
+                <strong>RNC/Cédula: </strong>
+                <span t-field="o.partner_id.vat"/>
+            </div>
+        </xpath>
+        
+    </template>
+    
+</odoo>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Extensión de configuración -->
+    <record id="res_config_settings_view_form_ncf" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.ncf</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="account.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//app[@name='account']" position="inside">
+                <block title="Comprobantes Fiscales RD (NCF)" name="ncf_settings">
+                    <setting id="ncf_alerts" title="Alertas NCF" 
+                             documentation="/applications/finance/accounting/customer_invoices/overview.html">
+                        <div class="content-group">
+                            <div class="row mt16">
+                                <label for="l10n_do_ncf_next_expiration_alert" class="col-lg-4"/>
+                                <field name="l10n_do_ncf_next_expiration_alert" class="col-lg-2"/>
+                                <span class="col-lg-4">días antes del vencimiento</span>
+                            </div>
+                            <div class="row mt8">
+                                <label for="l10n_do_ncf_low_sequence_alert" class="col-lg-4"/>
+                                <field name="l10n_do_ncf_low_sequence_alert" class="col-lg-2"/>
+                                <span class="col-lg-4">NCF disponibles</span>
+                            </div>
+                        </div>
+                    </setting>
+                    <setting id="ncf_journals" title="Diarios Fiscales">
+                        <div class="content-group">
+                            <div class="row mt16">
+                                <label for="l10n_do_fiscal_journal_id" class="col-lg-4"/>
+                                <field name="l10n_do_fiscal_journal_id" class="col-lg-6"/>
+                            </div>
+                            <div class="row mt8">
+                                <label for="l10n_do_informal_vendor_journal_id" class="col-lg-4"/>
+                                <field name="l10n_do_informal_vendor_journal_id" class="col-lg-6"/>
+                            </div>
+                        </div>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+    
+</odoo>
