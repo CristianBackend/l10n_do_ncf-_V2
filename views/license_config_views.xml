@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <record id="view_ncf_license_config_form" model="ir.ui.view">
+        <field name="name">l10n_do_ncf.license.config.form</field>
+        <field name="model">l10n_do_ncf.license.config</field>
+        <field name="arch" type="xml">
+            <form string="Licencia NCF">
+                <header>
+                    <button name="action_validate_license" string="Validar Licencia" type="object" class="btn-primary"/>
+                    <field name="status" widget="statusbar" statusbar_visible="pending,active,expired"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="license_key" placeholder="NCF-XXXX-XXXX-XXXX"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Datos de Licencia">
+                            <field name="company_rnc"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                        <group string="Estado de Licencia">
+                            <field name="is_valid"/>
+                            <field name="licensed_company_name"/>
+                            <field name="days_remaining"/>
+                            <field name="expiration_date"/>
+                        </group>
+                    </group>
+                    <group string="Informacion de Validacion">
+                        <field name="last_validation"/>
+                        <field name="validation_message"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_ncf_license_config_tree" model="ir.ui.view">
+        <field name="name">l10n_do_ncf.license.config.tree</field>
+        <field name="model">l10n_do_ncf.license.config</field>
+        <field name="arch" type="xml">
+            <tree string="Licencias NCF">
+                <field name="license_key"/>
+                <field name="company_rnc"/>
+                <field name="licensed_company_name"/>
+                <field name="status" decoration-success="status == 'active'" decoration-warning="status == 'grace_period'" decoration-danger="status in ('expired', 'invalid', 'blocked')"/>
+                <field name="days_remaining"/>
+                <field name="expiration_date"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_ncf_license_config" model="ir.actions.act_window">
+        <field name="name">Licencia NCF</field>
+        <field name="res_model">l10n_do_ncf.license.config</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+</odoo>

@@ -1,51 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     
-    <!-- Extensión de la vista de factura -->
     <record id="view_move_form_ncf" model="ir.ui.view">
         <field name="name">account.move.form.ncf</field>
         <field name="model">account.move</field>
         <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="priority">100</field>
         <field name="arch" type="xml">
             
-            <!-- Agregar campos NCF después del partner -->
-            <field name="partner_id" position="after">
+            <!-- Campos NCF para facturas de venta - Ubicados después de fecha -->
+            <xpath expr="//field[@name='invoice_date']" position="after">
                 <field name="l10n_do_ncf_type_id" 
+                       string="Tipo de Comprobante"
                        invisible="move_type not in ('out_invoice', 'out_refund')"
-                       required="move_type in ('out_invoice', 'out_refund') and company_id.country_id.code == 'DO'"
-                       options="{'no_create': True}"/>
-                <field name="l10n_do_ncf_number" 
-                       invisible="move_type not in ('out_invoice', 'out_refund')"
-                       readonly="1"/>
-            </field>
-            
-            <!-- Campos para facturas de proveedor -->
-            <field name="invoice_date" position="after">
-                <field name="l10n_do_vendor_ncf" 
-                       invisible="move_type not in ('in_invoice', 'in_refund')"
-                       placeholder="B0100000001"/>
-                <field name="l10n_do_vendor_ncf_validated" 
-                       invisible="move_type not in ('in_invoice', 'in_refund')"
-                       readonly="1"/>
-            </field>
-            
-            <!-- NCF origen para notas de crédito/débito -->
-            <field name="l10n_do_ncf_number" position="after">
-                <field name="l10n_do_ncf_origin" 
-                       invisible="move_type not in ('out_refund', 'in_refund')"
-                       placeholder="NCF de factura original"/>
-            </field>
-            
-            <!-- Tipo de gasto para compras -->
-            <xpath expr="//page[@name='other_info']//group[@name='accounting_info_group']" position="inside">
-                <field name="l10n_do_expense_type" invisible="move_type not in ('in_invoice', 'in_refund')"/>
-                <field name="l10n_do_fiscal_type"/>
+                       options="{'no_create': True}"
+                       required="move_type in ('out_invoice', 'out_refund')"/>
+                <label for="l10n_do_ncf_number" 
+                       string="NCF"
+                       invisible="move_type not in ('out_invoice', 'out_refund') or not l10n_do_ncf_number"/>
+                <div class="o_row" invisible="move_type not in ('out_invoice', 'out_refund') or not l10n_do_ncf_number">
+                    <field name="l10n_do_ncf_number" 
+                           readonly="1" 
+                           nolabel="1"
+                           class="fw-bold text-primary fs-5"/>
+                </div>
             </xpath>
             
-            <!-- Botón para validar NCF de proveedor -->
+            <!-- Campos NCF para facturas de compra -->
+            <xpath expr="//field[@name='invoice_date']" position="after">
+                <field name="l10n_do_vendor_ncf" 
+                       string="NCF Proveedor"
+                       invisible="move_type not in ('in_invoice', 'in_refund')"
+                       placeholder="Ej: B0100000001"
+                       class="fw-bold"/>
+                <field name="l10n_do_vendor_ncf_validated" 
+                       string="Validado DGII"
+                       invisible="move_type not in ('in_invoice', 'in_refund')"
+                       readonly="1"/>
+                <field name="l10n_do_expense_type" 
+                       string="Tipo de Gasto"
+                       invisible="move_type not in ('in_invoice', 'in_refund')"/>
+            </xpath>
+            
+            <!-- Campos en pestaña Otra información -->
+            <xpath expr="//page[@name='other_info']//group[@name='accounting_info_group']" position="inside">
+                <field name="l10n_do_fiscal_type" string="Tipo Fiscal"/>
+                <field name="l10n_do_ncf_origin" 
+                       string="NCF Origen" 
+                       invisible="move_type not in ('out_refund', 'in_refund')"/>
+                <field name="l10n_do_ncf_seq_id" 
+                       string="Secuencia NCF" 
+                       readonly="1" 
+                       invisible="not l10n_do_ncf_seq_id"/>
+            </xpath>
+            
+            <!-- Botón validar NCF proveedor -->
             <xpath expr="//header" position="inside">
                 <button name="action_validate_vendor_ncf" 
-                        string="Validar NCF" 
+                        string="Validar NCF DGII" 
                         type="object" 
                         class="btn-secondary"
                         invisible="move_type not in ('in_invoice', 'in_refund') or not l10n_do_vendor_ncf or l10n_do_vendor_ncf_validated"/>
@@ -54,26 +66,26 @@
         </field>
     </record>
     
-    <!-- Extensión de la vista tree de facturas -->
+    <!-- Lista de facturas cliente -->
     <record id="view_move_tree_ncf" model="ir.ui.view">
         <field name="name">account.move.tree.ncf</field>
         <field name="model">account.move</field>
         <field name="inherit_id" ref="account.view_out_invoice_tree"/>
         <field name="arch" type="xml">
             <field name="name" position="after">
-                <field name="l10n_do_ncf_number" optional="show"/>
+                <field name="l10n_do_ncf_number" string="NCF" optional="show" decoration-bf="1"/>
             </field>
         </field>
     </record>
     
-    <!-- También para facturas de proveedor -->
+    <!-- Lista de facturas proveedor -->
     <record id="view_in_invoice_tree_ncf" model="ir.ui.view">
         <field name="name">account.move.tree.vendor.ncf</field>
         <field name="model">account.move</field>
         <field name="inherit_id" ref="account.view_in_invoice_tree"/>
         <field name="arch" type="xml">
             <field name="name" position="after">
-                <field name="l10n_do_vendor_ncf" optional="show"/>
+                <field name="l10n_do_vendor_ncf" string="NCF Proveedor" optional="show"/>
             </field>
         </field>
     </record>

@@ -3,3 +3,5 @@ access_ncf_type_user,l10n_do_ncf.type user,model_l10n_do_ncf_type,group_ncf_user
 access_ncf_type_manager,l10n_do_ncf.type manager,model_l10n_do_ncf_type,group_ncf_manager,1,1,1,1
 access_ncf_sequence_user,l10n_do_ncf.sequence user,model_l10n_do_ncf_sequence,group_ncf_user,1,0,0,0
 access_ncf_sequence_manager,l10n_do_ncf.sequence manager,model_l10n_do_ncf_sequence,group_ncf_manager,1,1,1,1
+access_ncf_license_user,l10n_do_ncf.license.config user,model_l10n_do_ncf_license_config,group_ncf_user,1,0,0,0
+access_ncf_license_manager,l10n_do_ncf.license.config manager,model_l10n_do_ncf_license_config,group_ncf_manager,1,1,1,1

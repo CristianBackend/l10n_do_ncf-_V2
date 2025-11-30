@@ -86,9 +86,11 @@
                 <field name="name"/>
                 <field name="ncf_type_id"/>
                 <field name="prefix"/>
-                <filter name="active_sequences" string="Activas" domain="[('state', '=', 'active')]"/>
-                <filter name="low_stock" string="Stock Bajo" domain="[('available_qty', '&lt;=', 'warning_threshold')]"/>
-                <filter name="expiring_soon" string="Por Vencer" domain="[('expiration_date', '&lt;=', (context_today() + relativedelta(days=30)).strftime('%Y-%m-%d'))]"/>
+              <filter name="active_sequences" string="Activas" domain="[('state', '=', 'active')]"/>
+                <filter name="draft_sequences" string="Borradores" domain="[('state', '=', 'draft')]"/>
+                <filter name="expired_sequences" string="Vencidas" domain="[('state', '=', 'expired')]"/>
+                <filter name="with_expiration" string="Con Vencimiento" domain="[('aplica_vencimiento', '=', True)]"/>
+                <filter name="no_expiration" string="Sin Vencimiento" domain="[('aplica_vencimiento', '=', False)]"/>
                 <group expand="0" string="Agrupar por">
                     <filter name="group_type" string="Tipo NCF" context="{'group_by': 'ncf_type_id'}"/>
                     <filter name="group_state" string="Estado" context="{'group_by': 'state'}"/>

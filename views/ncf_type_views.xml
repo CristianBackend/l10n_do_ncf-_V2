@@ -26,6 +26,9 @@
         <field name="model">l10n_do_ncf.type</field>
         <field name="arch" type="xml">
             <form string="Tipo de NCF">
+                <header>
+                    <button string="← Volver al listado" type="action" name="%(action_ncf_type)d" class="btn-secondary"/>
+                </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
