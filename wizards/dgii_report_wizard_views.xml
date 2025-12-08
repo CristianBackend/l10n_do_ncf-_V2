@@ -1,46 +1,118 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    
     <!-- Vista Form del Wizard -->
     <record id="view_dgii_report_wizard_form" model="ir.ui.view">
         <field name="name">l10n_do_ncf.dgii.report.wizard.form</field>
         <field name="model">l10n_do_ncf.dgii.report.wizard</field>
         <field name="arch" type="xml">
             <form string="Generar Reporte DGII">
-                <group invisible="state == 'generated'">
-                    <group>
-                        <field name="company_id" groups="base.group_multi_company"/>
-                        <field name="report_type"/>
-                    </group>
-                    <group>
-                        <field name="date_from"/>
-                        <field name="date_to"/>
-                    </group>
-                </group>
-                <group invisible="state != 'generated'">
-                    <div class="alert alert-success" role="alert">
-                        <strong>¡Reporte generado exitosamente!</strong>
-                        <br/>
-                        Haga clic en "Descargar" para obtener el archivo.
+                <!-- Estado Draft - Formulario de seleccion -->
+                <div invisible="state == 'generated'">
+                    <div class="alert alert-info text-center mb-3" role="alert">
+                        <i class="fa fa-info-circle fa-lg me-2"/>
+                        <strong>Reportes DGII</strong> - Norma General 07-2018
                     </div>
-                    <field name="file_name" readonly="1"/>
-                </group>
+                    
+                    <group>
+                        <group string="Configuracion">
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="report_type" widget="radio" options="{'horizontal': false}"/>
+                        </group>
+                        <group string="Periodo a Reportar">
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                        </group>
+                    </group>
+                    
+                    <div class="alert alert-warning mt-3" role="alert">
+                        <i class="fa fa-exclamation-triangle me-2"/>
+                        <strong>Recordatorio:</strong> Los reportes deben enviarse a DGII antes del dia 15 de cada mes.
+                    </div>
+                </div>
+
+                <!-- Estado Generated - Resultado -->
+                <div invisible="state != 'generated'">
+                    <div class="alert alert-success text-center mb-3" role="alert">
+                        <h4 class="alert-heading mb-2">
+                            <i class="fa fa-check-circle fa-lg me-2"/>
+                            Reporte Generado Exitosamente
+                        </h4>
+                        <p class="mb-0">El archivo esta listo para descargar y enviar a DGII.</p>
+                    </div>
+                    
+                    <!-- Resumen del reporte -->
+                    <group string="Resumen del Reporte">
+                        <group>
+                            <field name="file_name" string="Archivo" readonly="1"/>
+                            <field name="record_count" string="Registros"/>
+                        </group>
+                        <group>
+                            <field name="total_amount" string="Monto Total" 
+                                   invisible="report_type in ('608', 'ir17')"/>
+                            <field name="total_itbis" string="Total ITBIS" 
+                                   invisible="report_type in ('608', '609', 'ir17')"/>
+                        </group>
+                    </group>
+                    
+                    <!-- Resumen especifico IR-17 -->
+                    <group string="Detalle de Retenciones" invisible="report_type != 'ir17'">
+                        <group>
+                            <field name="ir17_total_isr" string="Retencion ISR"/>
+                            <field name="ir17_total_itbis" string="Retencion ITBIS"/>
+                        </group>
+                        <group>
+                            <field name="ir17_total" string="TOTAL A PAGAR DGII" class="fw-bold text-primary"/>
+                        </group>
+                    </group>
+                    
+                    <field name="currency_id" invisible="1"/>
+                </div>
+                
                 <field name="state" invisible="1"/>
+                <field name="report_type" invisible="state == 'generated'"/>
+                
                 <footer>
-                    <button name="action_generate_report" string="Generar Reporte" type="object" class="btn-primary" invisible="state == 'generated'"/>
-                    <button name="action_download" string="Descargar" type="object" class="btn-success" invisible="state != 'generated'"/>
-                    <button string="Cerrar" class="btn-secondary" special="cancel"/>
+                    <!-- Botones estado Draft -->
+                    <button name="action_generate_report" 
+                            string="Generar Reporte" 
+                            type="object"
+                            class="btn-primary" 
+                            icon="fa-cogs"
+                            invisible="state == 'generated'"/>
+                    <button string="Cancelar" 
+                            class="btn-secondary" 
+                            special="cancel"
+                            invisible="state == 'generated'"/>
+                    
+                    <!-- Botones estado Generated -->
+                    <button name="action_download" 
+                            string="Descargar Archivo" 
+                            type="object"
+                            class="btn-success" 
+                            icon="fa-download"
+                            invisible="state != 'generated'"/>
+                    <button name="action_reset" 
+                            string="Generar Otro" 
+                            type="object"
+                            class="btn-primary" 
+                            icon="fa-refresh"
+                            invisible="state != 'generated'"/>
+                    <button string="Cerrar" 
+                            class="btn-secondary" 
+                            special="cancel"
+                            invisible="state != 'generated'"/>
                 </footer>
             </form>
         </field>
     </record>
-    
-    <!-- Acción del Wizard -->
+
+    <!-- Accion del Wizard -->
     <record id="action_dgii_report_wizard" model="ir.actions.act_window">
         <field name="name">Generar Reportes DGII</field>
         <field name="res_model">l10n_do_ncf.dgii.report.wizard</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
+        <field name="context">{'default_report_type': '607'}</field>
     </record>
-    
+
 </odoo>

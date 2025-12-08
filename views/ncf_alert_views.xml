@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Form View -->
+    <record id="view_ncf_alert_config_form" model="ir.ui.view">
+        <field name="name">l10n_do_ncf.alert.config.form</field>
+        <field name="model">l10n_do_ncf.alert.config</field>
+        <field name="arch" type="xml">
+            <form string="Configuración de Alertas NCF">
+                <header>
+                    <button name="action_test_alert" 
+                            type="object" 
+                            string="🔔 Probar Alertas Ahora"
+                            class="btn-primary"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    
+                    <group>
+                        <group string="📊 Alerta por Stock Bajo">
+                            <field name="alert_low_stock"/>
+                            <field name="low_stock_threshold" 
+                                   invisible="not alert_low_stock"/>
+                        </group>
+                        <group string="📅 Alerta por Vencimiento">
+                            <field name="alert_expiring"/>
+                            <field name="expiring_days"
+                                   invisible="not alert_expiring"/>
+                        </group>
+                    </group>
+                    
+                    <group string="📧 Destinatarios">
+                        <field name="alert_email_ids" widget="many2many_tags">
+                            <tree>
+                                <field name="name"/>
+                                <field name="email"/>
+                            </tree>
+                        </field>
+                    </group>
+                    
+                    <group string="ℹ️ Información">
+                        <group>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="last_check" readonly="1"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    
+                    <div class="alert alert-info" role="alert">
+                        <strong>💡 Información:</strong>
+                        <ul>
+                            <li>Las alertas se envían automáticamente cada día</li>
+                            <li>Use el botón "Probar Alertas Ahora" para verificar la configuración</li>
+                            <li>Asegúrese de que los usuarios tengan email configurado</li>
+                        </ul>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Tree View -->
+    <record id="view_ncf_alert_config_tree" model="ir.ui.view">
+        <field name="name">l10n_do_ncf.alert.config.tree</field>
+        <field name="model">l10n_do_ncf.alert.config</field>
+        <field name="arch" type="xml">
+            <tree string="Configuraciones de Alertas">
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="alert_low_stock"/>
+                <field name="low_stock_threshold"/>
+                <field name="alert_expiring"/>
+                <field name="expiring_days"/>
+                <field name="last_check"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+    
+    <!-- Action -->
+    <record id="action_ncf_alert_config" model="ir.actions.act_window">
+        <field name="name">Configurar Alertas</field>
+        <field name="res_model">l10n_do_ncf.alert.config</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Configure las alertas de NCF
+            </p>
+            <p>
+                Reciba notificaciones por email cuando sus secuencias NCF estén por agotarse o vencer.
+            </p>
+        </field>
+    </record>
+    
+    <!-- Menu -->
+    <menuitem id="menu_ncf_alerts"
+              name="Alertas NCF"
+              parent="l10n_do_ncf.menu_ncf_root"
+              action="action_ncf_alert_config"
+              sequence="40"
+              groups="l10n_do_ncf.group_ncf_manager"/>
+    
+    <!-- Cron Job -->
+    <record id="ir_cron_ncf_alerts" model="ir.cron">
+        <field name="name">NCF: Verificar Alertas de Secuencias</field>
+        <field name="model_id" ref="model_l10n_do_ncf_alert_config"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_check_ncf_alerts()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+        <field name="active">True</field>
+        <field name="doall">False</field>
+    </record>
+    
+</odoo>

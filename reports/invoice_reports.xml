@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ============================================================ -->
+    <!-- FORMATO DE PAPEL - Debe ir PRIMERO                           -->
+    <!-- ============================================================ -->
+
+    <!-- Formato de papel para Ticket 80mm -->
+    <record id="paperformat_ticket_80mm" model="report.paperformat">
+        <field name="name">Ticket 80mm NCF</field>
+        <field name="default" eval="False"/>
+        <field name="format">custom</field>
+        <field name="page_width">80</field>
+        <field name="page_height">297</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">5</field>
+        <field name="margin_bottom">5</field>
+        <field name="margin_left">5</field>
+        <field name="margin_right">5</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">0</field>
+        <field name="dpi">96</field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- DEFINICION DE REPORTES - Acciones de impresion               -->
+    <!-- ============================================================ -->
+
+    <!-- Reporte: Factura Profesional NCF -->
+    <record id="action_report_invoice_ncf_professional" model="ir.actions.report">
+        <field name="name">Factura NCF Profesional</field>
+        <field name="model">account.move</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">l10n_do_ncf.report_invoice_ncf_professional</field>
+        <field name="report_file">l10n_do_ncf.report_invoice_ncf_professional</field>
+        <field name="print_report_name">'Factura_%s_%s' % (object.name, object.l10n_do_ncf_number or '')</field>
+        <field name="binding_model_id" ref="account.model_account_move"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- Reporte: Ticket POS 80mm -->
+    <record id="action_report_invoice_ncf_ticket" model="ir.actions.report">
+        <field name="name">Ticket NCF (80mm)</field>
+        <field name="model">account.move</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">l10n_do_ncf.report_invoice_ncf_ticket</field>
+        <field name="report_file">l10n_do_ncf.report_invoice_ncf_ticket</field>
+        <field name="print_report_name">'Ticket_%s_%s' % (object.name, object.l10n_do_ncf_number or '')</field>
+        <field name="binding_model_id" ref="account.model_account_move"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="paperformat_ticket_80mm"/>
+    </record>
+
+    <!-- Reporte: Factura Compacta -->
+    <record id="action_report_invoice_ncf_compact" model="ir.actions.report">
+        <field name="name">Factura NCF Compacta</field>
+        <field name="model">account.move</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">l10n_do_ncf.report_invoice_ncf_compact</field>
+        <field name="report_file">l10n_do_ncf.report_invoice_ncf_compact</field>
+        <field name="print_report_name">'FacturaCompacta_%s_%s' % (object.name, object.l10n_do_ncf_number or '')</field>
+        <field name="binding_model_id" ref="account.model_account_move"/>
+        <field name="binding_type">report</field>
+    </record>
+
+</odoo>

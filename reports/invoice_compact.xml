@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="report_invoice_ncf_compact">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="l10n_do_ncf.report_invoice_ncf_compact_document" t-lang="lang"/>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_invoice_ncf_compact_document">
+        <t t-call="web.external_layout">
+            <t t-set="o" t-value="o"/>
+            <t t-set="print_time" t-value="datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')"/>
+            
+            <div class="page" style="font-family: Arial, sans-serif; font-size: 11px;">
+
+                <!-- ENCABEZADO -->
+                <div class="row" style="border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 10px;">
+                    <div class="col-6">
+                        <h3 style="margin: 0;">
+                            <t t-if="o.move_type == 'out_invoice'">FACTURA</t>
+                            <t t-if="o.move_type == 'out_refund'">NOTA DE CREDITO</t>
+                        </h3>
+                        <t t-esc="o.name"/> | Fecha: <t t-esc="o.invoice_date"/><br/>
+                        <span style="font-size: 9px;">Impreso: <t t-esc="print_time"/></span>
+                    </div>
+                    <div class="col-6 text-end">
+                        <div style="display: inline-block; border: 2px solid #000; padding: 8px 12px;">
+                            <small>NCF</small><br/>
+                            <strong><t t-esc="o.l10n_do_ncf_number"/></strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- EMISOR Y CLIENTE -->
+                <div class="row" style="margin-bottom: 10px; font-size: 10px;">
+                    <div class="col-6">
+                        <strong>DE:</strong> <t t-esc="o.company_id.name"/> | RNC: <t t-esc="o.company_id.vat"/>
+                    </div>
+                    <div class="col-6">
+                        <strong>PARA:</strong> <t t-esc="o.partner_id.name"/> | RNC: <t t-esc="o.partner_id.vat or 'N/A'"/>
+                    </div>
+                </div>
+
+                <!-- TABLA PRODUCTOS -->
+                <table class="table table-sm table-bordered" style="font-size: 10px; margin-bottom: 10px;">
+                    <thead style="background-color: #f0f0f0;">
+                        <tr>
+                            <th>Descripcion</th>
+                            <th class="text-center" style="width: 50px;">Cant</th>
+                            <th class="text-end" style="width: 70px;">Precio</th>
+                            <th class="text-center" style="width: 50px;">ITBIS</th>
+                            <th class="text-end" style="width: 80px;">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-set="lines" t-value="o.invoice_line_ids.filtered(lambda l: l.display_type not in ('line_section', 'line_note'))"/>
+                        <t t-foreach="lines" t-as="line">
+                            <tr>
+                                <td><t t-esc="line.product_id.name or line.name"/></td>
+                                <td class="text-center"><t t-esc="'%.2f' % line.quantity"/></td>
+                                <td class="text-end"><t t-esc="'%.2f' % line.price_unit"/></td>
+                                <td class="text-center">
+                                    <t t-foreach="line.tax_ids" t-as="tax"><t t-esc="'%.0f' % tax.amount"/>%</t>
+                                </td>
+                                <td class="text-end"><strong><t t-esc="'%.2f' % line.price_subtotal"/></strong></td>
+                            </tr>
+                        </t>
+                    </tbody>
+                </table>
+
+                <!-- TOTALES -->
+                <div class="row">
+                    <div class="col-7"></div>
+                    <div class="col-5">
+                        <table style="width: 100%;">
+                            <tr><td>Subtotal:</td><td class="text-end"><t t-esc="'%.2f' % o.amount_untaxed"/></td></tr>
+                            <tr><td>ITBIS:</td><td class="text-end"><t t-esc="'%.2f' % o.amount_tax"/></td></tr>
+                            <tr style="background-color: #f0f0f0; font-weight: bold;">
+                                <td style="padding: 5px;">TOTAL <t t-esc="o.currency_id.symbol"/>:</td>
+                                <td class="text-end" style="padding: 5px;"><t t-esc="'%.2f' % o.amount_total"/></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- PIE FISCAL -->
+                <div style="margin-top: 15px; padding: 8px; border: 1px solid #000; font-size: 9px; text-align: center;">
+                    <strong>NCF:</strong> <t t-esc="o.l10n_do_ncf_number"/> |
+                    <strong>Tipo:</strong> <t t-esc="o.l10n_do_ncf_type_id.name"/> |
+                    <strong>RNC Emisor:</strong> <t t-esc="o.company_id.vat"/> |
+                    <strong>RNC Cliente:</strong> <t t-esc="o.partner_id.vat or 'N/A'"/>
+                    <t t-if="o.l10n_do_ncf_expiration">
+                        | <strong>Vence:</strong> <t t-esc="o.l10n_do_ncf_expiration"/>
+                    </t>
+                </div>
+
+            </div>
+        </t>
+    </template>
+
+</odoo>

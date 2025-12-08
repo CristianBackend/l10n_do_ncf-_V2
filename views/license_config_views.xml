@@ -1,36 +1,119 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    
+
     <record id="view_ncf_license_config_form" model="ir.ui.view">
         <field name="name">l10n_do_ncf.license.config.form</field>
         <field name="model">l10n_do_ncf.license.config</field>
         <field name="arch" type="xml">
-            <form string="Licencia NCF">
+            <form string="Licencia NCF" create="false" copy="false" delete="false">
                 <header>
-                    <button name="action_validate_license" string="Validar Licencia" type="object" class="btn-primary"/>
+                    <button name="action_validate_license"
+                            string="Validar Licencia"
+                            type="object"
+                            class="btn-primary"
+                            icon="fa-refresh"/>
+                    <button name="action_buy_license"
+                            string="Renovar Licencia"
+                            type="object"
+                            class="btn-warning"
+                            icon="fa-shopping-cart"
+                            invisible="status == 'active' and days_remaining > 7"/>
                     <field name="status" widget="statusbar" statusbar_visible="pending,active,expired"/>
                 </header>
                 <sheet>
-                    <div class="oe_title">
-                        <h1>
-                            <field name="license_key" placeholder="NCF-XXXX-XXXX-XXXX"/>
-                        </h1>
+                    <!-- Alerta si no hay licencia configurada -->
+                    <div class="alert alert-warning text-center p-4" role="alert" 
+                         invisible="license_key and license_key != 'INGRESE-SU-LICENCIA'">
+                        <h3 class="alert-heading mb-3">
+                            <i class="fa fa-lock fa-2x mb-2 d-block"/>
+                            Licencia Requerida
+                        </h3>
+                        <p class="mb-3">Para usar el modulo NCF de facturacion fiscal dominicana necesita una licencia activa.</p>
+                        <hr/>
+                        <div class="mb-3">
+                            <a href="https://node-a1.newplain.com/buy/" 
+                               target="_blank" 
+                               class="btn btn-success btn-lg">
+                                <i class="fa fa-shopping-cart"/> Comprar Licencia
+                            </a>
+                        </div>
+                        <p class="text-muted small mb-0">
+                            Ya tienes licencia? Ingresala abajo y haz clic en "Validar Licencia"
+                        </p>
                     </div>
+
+                    <!-- Alerta licencia activa con muchos dias -->
+                    <div class="alert alert-success text-center p-4" role="alert" 
+                         invisible="status != 'active' or days_remaining &lt;= 7">
+                        <h3 class="alert-heading">
+                            <i class="fa fa-check-circle fa-2x mb-2 d-block text-success"/>
+                            Licencia Activa
+                        </h3>
+                        <p class="mb-1">Su licencia esta activa y funcionando correctamente.</p>
+                        <p class="mb-0"><strong><field name="days_remaining" readonly="1" class="d-inline"/> dias restantes</strong></p>
+                    </div>
+
+                    <!-- Alerta licencia por vencer (7 dias o menos) -->
+                    <div class="alert alert-warning text-center p-4" role="alert" 
+                         invisible="status != 'active' or days_remaining > 7">
+                        <h3 class="alert-heading">
+                            <i class="fa fa-exclamation-triangle fa-2x mb-2 d-block"/>
+                            Licencia Por Vencer
+                        </h3>
+                        <p class="mb-3">Su licencia vence en <strong><field name="days_remaining" readonly="1" class="d-inline"/> dias</strong>. Renueve ahora para evitar interrupciones.</p>
+                        <a href="https://node-a1.newplain.com/buy/" 
+                           target="_blank" 
+                           class="btn btn-warning btn-lg">
+                            <i class="fa fa-refresh"/> Renovar Ahora
+                        </a>
+                    </div>
+
+                    
+                  <!-- Alerta licencia expirada/invalida -->
+                    <div class="alert alert-danger text-center p-4" role="alert" 
+                         invisible="status not in ('expired', 'invalid', 'blocked')">
+                        <h3 class="alert-heading">
+                            <i class="fa fa-times-circle fa-2x mb-2 d-block"/>
+                            Licencia Invalida o Expirada
+                        </h3>
+                        <p class="mb-3">Su licencia ha expirado o es invalida. El modulo NCF esta deshabilitado.</p>
+                        <a href="https://node-a1.newplain.com/buy/" 
+                           target="_blank" 
+                           class="btn btn-danger btn-lg">
+                            <i class="fa fa-shopping-cart"/> Renovar Licencia
+                        </a>
+                    </div>
+
+                    <!-- Alerta pendiente de validacion -->
+                    <div class="alert alert-info text-center p-4" role="alert" 
+                         invisible="status != 'pending' or not license_key or license_key == 'INGRESE-SU-LICENCIA'">
+                        <h3 class="alert-heading">
+                            <i class="fa fa-info-circle fa-2x mb-2 d-block"/>
+                            Licencia Pendiente
+                        </h3>
+                        <p class="mb-0">Haga clic en <strong>"Validar Licencia"</strong> para activar su licencia.</p>
+                    </div>
+
                     <group>
                         <group string="Datos de Licencia">
-                            <field name="company_rnc"/>
-                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="license_key" placeholder="NCF-2025-XXXXXXXX" class="fw-bold"
+                                   readonly="status == 'active'"/>
+                            <field name="company_rnc" string="RNC Empresa" placeholder="123456789"
+                                   readonly="status == 'active'"/>
+                            <field name="company_id" groups="base.group_multi_company" 
+                                   readonly="status == 'active'"/>
                         </group>
-                        <group string="Estado de Licencia">
-                            <field name="is_valid"/>
-                            <field name="licensed_company_name"/>
-                            <field name="days_remaining"/>
-                            <field name="expiration_date"/>
+                        <group string="Estado de Licencia" invisible="status == 'pending'">
+                            <field name="is_valid" string="Licencia Valida" widget="boolean_toggle" readonly="1"/>
+                            <field name="licensed_company_name" string="Empresa Licenciada" readonly="1"/>
+                            <field name="expiration_date" string="Fecha Vencimiento" readonly="1"/>
                         </group>
                     </group>
-                    <group string="Informacion de Validacion">
-                        <field name="last_validation"/>
-                        <field name="validation_message"/>
+
+                    <group string="Informacion de Validacion" invisible="not last_validation">
+                        <field name="last_validation" string="Ultima Validacion" readonly="1"/>
+                        <field name="validation_message" string="Mensaje" readonly="1" 
+                               invisible="status == 'active'"/>
                     </group>
                 </sheet>
             </form>
@@ -41,21 +124,42 @@
         <field name="name">l10n_do_ncf.license.config.tree</field>
         <field name="model">l10n_do_ncf.license.config</field>
         <field name="arch" type="xml">
-            <tree string="Licencias NCF">
+            <tree string="Licencias NCF" create="false" delete="false">
                 <field name="license_key"/>
-                <field name="company_rnc"/>
-                <field name="licensed_company_name"/>
-                <field name="status" decoration-success="status == 'active'" decoration-warning="status == 'grace_period'" decoration-danger="status in ('expired', 'invalid', 'blocked')"/>
-                <field name="days_remaining"/>
-                <field name="expiration_date"/>
+                <field name="company_rnc" string="RNC"/>
+                <field name="licensed_company_name" string="Empresa"/>
+                <field name="status" widget="badge"
+                       decoration-success="status == 'active'"
+                       decoration-warning="status == 'grace_period'"
+                       decoration-danger="status in ('expired', 'invalid', 'blocked')"/>
+                <field name="days_remaining" string="Dias"/>
+                <field name="expiration_date" string="Vence"/>
             </tree>
         </field>
     </record>
 
-    <record id="action_ncf_license_config" model="ir.actions.act_window">
-        <field name="name">Licencia NCF</field>
-        <field name="res_model">l10n_do_ncf.license.config</field>
-        <field name="view_mode">tree,form</field>
+    <!-- Acción que abre el registro existente o crea uno nuevo -->
+    <record id="action_ncf_license_config_server" model="ir.actions.server">
+        <field name="name">Abrir Licencia NCF</field>
+        <field name="model_id" ref="model_l10n_do_ncf_license_config"/>
+        <field name="state">code</field>
+        <field name="code">
+config = env['l10n_do_ncf.license.config'].search([('company_id', '=', env.company.id)], limit=1)
+if not config:
+    config = env['l10n_do_ncf.license.config'].create({
+        'license_key': 'INGRESE-SU-LICENCIA',
+        'company_rnc': env.company.vat or '',
+        'company_id': env.company.id,
+    })
+action = {
+    'type': 'ir.actions.act_window',
+    'name': 'Licencia NCF',
+    'res_model': 'l10n_do_ncf.license.config',
+    'view_mode': 'form',
+    'res_id': config.id,
+    'target': 'current',
+}
+        </field>
     </record>
 
 </odoo>

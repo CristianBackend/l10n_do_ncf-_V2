@@ -1,83 +1,161 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    
+
     <record id="view_move_form_ncf" model="ir.ui.view">
         <field name="name">account.move.form.ncf</field>
         <field name="model">account.move</field>
         <field name="inherit_id" ref="account.view_move_form"/>
         <field name="priority">100</field>
         <field name="arch" type="xml">
-            
-            <!-- Campos NCF para facturas de venta - Ubicados después de fecha -->
-            <xpath expr="//field[@name='invoice_date']" position="after">
-                <field name="l10n_do_ncf_type_id" 
-                       string="Tipo de Comprobante"
-                       invisible="move_type not in ('out_invoice', 'out_refund')"
-                       options="{'no_create': True}"
-                       required="move_type in ('out_invoice', 'out_refund')"/>
-                <label for="l10n_do_ncf_number" 
-                       string="NCF"
-                       invisible="move_type not in ('out_invoice', 'out_refund') or not l10n_do_ncf_number"/>
-                <div class="o_row" invisible="move_type not in ('out_invoice', 'out_refund') or not l10n_do_ncf_number">
-                    <field name="l10n_do_ncf_number" 
-                           readonly="1" 
-                           nolabel="1"
-                           class="fw-bold text-primary fs-5"/>
+
+            <!-- Botones de impresion rapida (ANTES de action_post) -->
+            <xpath expr="//button[@name='action_post']" position="before">
+                <button name="action_print_professional" type="object"
+                        string="Imprimir"
+                        class="btn-primary"
+                        icon="fa-print"
+                        invisible="state == 'draft' or move_type not in ('out_invoice', 'out_refund')"/>
+                <button name="action_print_ticket" type="object"
+                        string="Ticket"
+                        class="btn-secondary"
+                        icon="fa-ticket"
+                        invisible="state == 'draft' or move_type not in ('out_invoice', 'out_refund')"/>
+            </xpath>
+
+            <!-- Boton Confirmar y Cobrar (DESPUES de action_post) -->
+            <xpath expr="//button[@name='action_post']" position="after">
+                <button name="action_post_and_pay" type="object"
+                        string="Confirmar y Cobrar"
+                        class="btn-success"
+                        data-hotkey="shift+c"
+                        invisible="state != 'draft' or move_type not in ('out_invoice', 'out_refund')"/>
+            </xpath>
+
+            <!-- NCF visible despues del nombre de la factura -->
+            <xpath expr="//div[hasclass('oe_title')]" position="after">
+                <div class="alert alert-success text-center py-2 px-3 mb-3"
+                     style="font-size: 1.2em; border-radius: 8px;"
+                     invisible="move_type not in ('out_invoice', 'out_refund') or not l10n_do_ncf_number">
+                    <strong>NCF:</strong>
+                    <span class="fs-4 fw-bold" style="color: #155724;">
+                        <field name="l10n_do_ncf_number" readonly="1" nolabel="1" class="d-inline"/>
+                    </span>
                 </div>
             </xpath>
-            
-            <!-- Campos NCF para facturas de compra -->
+
+            <!-- Tipo de comprobante para facturas de venta -->
             <xpath expr="//field[@name='invoice_date']" position="after">
-                <field name="l10n_do_vendor_ncf" 
-                       string="NCF Proveedor"
-                       invisible="move_type not in ('in_invoice', 'in_refund')"
-                       placeholder="Ej: B0100000001"
-                       class="fw-bold"/>
-                <field name="l10n_do_vendor_ncf_validated" 
-                       string="Validado DGII"
-                       invisible="move_type not in ('in_invoice', 'in_refund')"
-                       readonly="1"/>
-                <field name="l10n_do_expense_type" 
-                       string="Tipo de Gasto"
+                <field name="l10n_do_ncf_type_id"
+                       string="Comprobante"
+                       invisible="move_type not in ('out_invoice', 'out_refund')"
+                       options="{'no_create': True}"/>
+            </xpath>
+
+            <!-- Campos para NOTAS DE CREDITO -->
+            <xpath expr="//field[@name='invoice_date']" position="after">
+                <field name="l10n_do_origin_move_id"
+                       string="Factura Origen"
+                       invisible="move_type != 'out_refund'"
+                       options="{'no_create': True}"/>
+                <field name="l10n_do_ncf_origin"
+                       string="NCF Afectado"
+                       invisible="move_type != 'out_refund'"
+                       placeholder="B0100000001"/>
+            </xpath>
+
+            <!-- Campos para facturas de COMPRA (proveedor) -->
+            <xpath expr="//field[@name='ref']" position="after">
+                <label for="l10n_do_vendor_ncf" string="NCF Proveedor"
+                       invisible="move_type not in ('in_invoice', 'in_refund')"/>
+                <div class="d-flex align-items-center" invisible="move_type not in ('in_invoice', 'in_refund')">
+                    <field name="l10n_do_vendor_ncf"
+                           placeholder="B0100000001"
+                           class="fw-bold oe_inline"/>
+                    <field name="l10n_do_vendor_ncf_validated" invisible="1"/>
+                    <button name="action_validate_vendor_ncf" type="object"
+                            string="Validar" class="btn-secondary ms-2"
+                            icon="fa-check"
+                            invisible="not l10n_do_vendor_ncf or l10n_do_vendor_ncf_validated"/>
+                    <span class="badge bg-success ms-2"
+                          invisible="not l10n_do_vendor_ncf_validated">
+                        <i class="fa fa-check"/> Validado
+                    </span>
+                </div>
+                <field name="l10n_do_expense_type"
+                       string="Tipo Gasto"
                        invisible="move_type not in ('in_invoice', 'in_refund')"/>
             </xpath>
-            
-            <!-- Campos en pestaña Otra información -->
-            <xpath expr="//page[@name='other_info']//group[@name='accounting_info_group']" position="inside">
-                <field name="l10n_do_fiscal_type" string="Tipo Fiscal"/>
-                <field name="l10n_do_ncf_origin" 
-                       string="NCF Origen" 
-                       invisible="move_type not in ('out_refund', 'in_refund')"/>
-                <field name="l10n_do_ncf_seq_id" 
-                       string="Secuencia NCF" 
-                       readonly="1" 
-                       invisible="not l10n_do_ncf_seq_id"/>
+
+            <!-- Pestaña de Retenciones para facturas de proveedor -->
+            <xpath expr="//page[@name='other_info']" position="before">
+                <page string="Retenciones" name="retentions_page"
+                      invisible="move_type not in ('in_invoice', 'in_refund')">
+
+                    <group>
+                        <group>
+                            <field name="l10n_do_total_isr_retention" string="Retencion ISR" readonly="1"/>
+                            <field name="l10n_do_total_itbis_retention" string="Retencion ITBIS" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="amount_total" string="Total Factura" readonly="1"/>
+                            <field name="l10n_do_amount_to_pay" string="Monto a Pagar" readonly="1"
+                                   class="fw-bold text-primary"/>
+                        </group>
+                    </group>
+
+                    <separator string="Detalle de Retenciones"/>
+
+                    <field name="l10n_do_retention_ids" nolabel="1">
+                        <tree editable="bottom">
+                            <field name="retention_type_id"/>
+                            <field name="base_amount"/>
+                            <field name="rate" readonly="1"/>
+                            <field name="retention_amount" readonly="1" sum="Total"/>
+                            <field name="currency_id" column_invisible="1"/>
+                        </tree>
+                    </field>
+
+                    <group class="mt-3">
+                        <div>
+                            <button name="action_add_retention" type="object"
+                                    string="Agregar Retencion" class="btn-secondary"
+                                    icon="fa-plus"/>
+                            <button name="action_clear_retentions" type="object"
+                                    string="Limpiar Todo" class="btn-link text-danger"
+                                    icon="fa-trash"
+                                    invisible="not l10n_do_retention_ids"/>
+                        </div>
+                    </group>
+                </page>
             </xpath>
-            
-            <!-- Botón validar NCF proveedor -->
-            <xpath expr="//header" position="inside">
-                <button name="action_validate_vendor_ncf" 
-                        string="Validar NCF DGII" 
-                        type="object" 
-                        class="btn-secondary"
-                        invisible="move_type not in ('in_invoice', 'in_refund') or not l10n_do_vendor_ncf or l10n_do_vendor_ncf_validated"/>
+
+            <!-- Campos adicionales en pestaña Otra info -->
+            <xpath expr="//page[@name='other_info']" position="inside">
+                <group string="Informacion Fiscal RD" name="fiscal_rd_group">
+                    <group>
+                        <field name="l10n_do_fiscal_type" string="Tipo Fiscal"/>
+                    </group>
+                    <group>
+                        <field name="l10n_do_ncf_seq_id" string="Secuencia" readonly="1"/>
+                    </group>
+                </group>
             </xpath>
-            
+
         </field>
     </record>
-    
-    <!-- Lista de facturas cliente -->
+
+    <!-- Lista de facturas cliente - NCF visible -->
     <record id="view_move_tree_ncf" model="ir.ui.view">
         <field name="name">account.move.tree.ncf</field>
         <field name="model">account.move</field>
         <field name="inherit_id" ref="account.view_out_invoice_tree"/>
         <field name="arch" type="xml">
             <field name="name" position="after">
-                <field name="l10n_do_ncf_number" string="NCF" optional="show" decoration-bf="1"/>
+                <field name="l10n_do_ncf_number" string="NCF" optional="show"/>
             </field>
         </field>
     </record>
-    
+
     <!-- Lista de facturas proveedor -->
     <record id="view_in_invoice_tree_ncf" model="ir.ui.view">
         <field name="name">account.move.tree.vendor.ncf</field>
@@ -85,9 +163,10 @@
         <field name="inherit_id" ref="account.view_in_invoice_tree"/>
         <field name="arch" type="xml">
             <field name="name" position="after">
-                <field name="l10n_do_vendor_ncf" string="NCF Proveedor" optional="show"/>
+                <field name="l10n_do_vendor_ncf" string="NCF" optional="show"/>
+                <field name="l10n_do_vendor_ncf_validated" string="Validado" optional="hide" widget="boolean"/>
             </field>
         </field>
     </record>
-    
+
 </odoo>

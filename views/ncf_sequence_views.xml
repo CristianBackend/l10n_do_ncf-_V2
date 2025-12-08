@@ -1,29 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    
-    <!-- Vista Tree -->
+
+    <!-- Vista Tree con Semaforo -->
     <record id="view_ncf_sequence_tree" model="ir.ui.view">
         <field name="name">l10n_do_ncf.sequence.tree</field>
         <field name="model">l10n_do_ncf.sequence</field>
         <field name="arch" type="xml">
-            <tree string="Secuencias NCF" decoration-danger="state in ('depleted', 'expired')" decoration-warning="available_qty &lt;= warning_threshold and state == 'active'" decoration-muted="state == 'draft'">
-                <field name="ncf_type_id"/>
-                <field name="prefix"/>
-                <field name="range_from"/>
-                <field name="range_to"/>
-                <field name="current_number"/>
-                <field name="next_number"/>
-                <field name="available_qty"/>
-                <field name="warning_threshold" optional="hide"/>
-                <field name="authorization_date"/>
-                <field name="aplica_vencimiento" widget="boolean" optional="show"/>
-                <field name="expiration_date"/>
-                <field name="state" widget="badge" decoration-success="state == 'active'" decoration-warning="state == 'draft'" decoration-danger="state in ('depleted', 'expired')"/>
-                <field name="company_id" groups="base.group_multi_company"/>
+            <tree string="Secuencias NCF"
+                  decoration-danger="state in ('depleted', 'expired')"
+                  decoration-muted="state == 'draft'">
+                <field name="ncf_type_id" string="Tipo"/>
+                <field name="prefix" string="Serie"/>
+                <field name="range_from" string="Desde"/>
+                <field name="range_to" string="Hasta"/>
+                <field name="current_number" string="Actual"/>
+                <field name="available_qty" string="Disponibles"/>
+                <field name="traffic_light" string="Uso" widget="badge"
+                       decoration-success="traffic_light == 'green'"
+                       decoration-warning="traffic_light == 'yellow'"
+                       decoration-danger="traffic_light == 'red'"/>
+                <field name="expiration_date" string="Vence"/>
+                <field name="state" string="Estado" widget="badge"
+                       decoration-success="state == 'active'"
+                       decoration-warning="state == 'draft'"
+                       decoration-danger="state in ('depleted', 'expired')"/>
             </tree>
         </field>
     </record>
-    
+
     <!-- Vista Form -->
     <record id="view_ncf_sequence_form" model="ir.ui.view">
         <field name="name">l10n_do_ncf.sequence.form</field>
@@ -31,52 +35,90 @@
         <field name="arch" type="xml">
             <form string="Secuencia NCF">
                 <header>
-                    <button name="action_activate" string="Activar" type="object" class="btn-primary" invisible="state != 'draft'"/>
-                    <field name="state" widget="statusbar" statusbar_visible="draft,active"/>
+                    <button name="action_activate" string="Activar Secuencia" type="object" class="btn-primary" invisible="state != 'draft'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,active,depleted,expired"/>
                 </header>
                 <sheet>
+                    <div class="alert alert-info" role="alert" invisible="state != 'draft'">
+                        <h4>Como obtener secuencias NCF de la DGII:</h4>
+                        <ol>
+                            <li>Ingrese a la <strong>Oficina Virtual DGII</strong> (dgii.gov.do)</li>
+                            <li>Vaya a <strong>Solicitudes - Comprobantes Fiscales</strong></li>
+                            <li>Seleccione el tipo de comprobante que necesita</li>
+                            <li>La DGII le asignara un rango (ej: 00000001 al 00000500)</li>
+                            <li>Ingrese ese rango aqui y haga clic en <strong>Activar</strong></li>
+                        </ol>
+                    </div>
+
+                    <div class="alert alert-success" role="alert" invisible="state != 'active' or traffic_light != 'green'">
+                        <strong>Secuencia OK</strong> - 
+                        Disponibles: <field name="available_qty" class="oe_inline" readonly="1"/> NCF
+                    </div>
+
+                    <div class="alert alert-warning" role="alert" invisible="state != 'active' or traffic_light != 'yellow'">
+                        <strong>Atencion</strong> - 
+                        Quedan solo <field name="available_qty" class="oe_inline" readonly="1"/> NCF disponibles. Considere solicitar mas a la DGII.
+                    </div>
+
+                    <div class="alert alert-danger" role="alert" invisible="state != 'active' or traffic_light != 'red'">
+                        <strong>Urgente</strong> - 
+                        Solo quedan <field name="available_qty" class="oe_inline" readonly="1"/> NCF. Solicite mas a la DGII inmediatamente.
+                    </div>
+
+                    <div class="alert alert-danger" role="alert" invisible="state != 'depleted'">
+                        <strong>Secuencia Agotada</strong> - Debe solicitar una nueva secuencia a la DGII.
+                    </div>
+
+                    <div class="alert alert-warning" role="alert" invisible="state != 'expired'">
+                        <strong>Secuencia Vencida</strong> - Esta secuencia ha expirado.
+                    </div>
+
                     <div class="oe_button_box" name="button_box">
                         <button name="action_view_invoices" type="object" class="oe_stat_button" icon="fa-file-text-o">
-                            <span>Facturas</span>
+                            <span>Ver Facturas</span>
                         </button>
                     </div>
+
                     <div class="oe_title">
+                        <label for="ncf_type_id" string="Tipo de Comprobante"/>
                         <h1>
-                            <field name="name"/>
+                            <field name="ncf_type_id" placeholder="Seleccione tipo..." options="{'no_create': True}"/>
                         </h1>
+                        <h2>
+                            <field name="name" readonly="1"/>
+                        </h2>
                     </div>
+
                     <group>
-                        <group string="Configuración">
-                            <field name="company_id" groups="base.group_multi_company"/>
-                            <field name="ncf_type_id"/>
-                            <field name="prefix" readonly="1"/>
-                            <field name="aplica_vencimiento" readonly="1"/>
+                        <group string="Rango Autorizado por DGII">
+                            <field name="prefix" string="Serie" readonly="1"/>
+                            <field name="range_from" string="Numero Inicial" placeholder="00000001"/>
+                            <field name="range_to" string="Numero Final" placeholder="00000500"/>
                         </group>
-                        <group string="Rango Autorizado">
-                            <field name="range_from"/>
-                            <field name="range_to"/>
-                            <field name="authorization_date"/>
-                            <field name="expiration_date" invisible="not aplica_vencimiento"/>
-                            <div colspan="2" invisible="aplica_vencimiento" class="alert alert-info">
-                                <strong>ℹ️ Este tipo de NCF no aplica vencimiento</strong> según las guías operativas de DGII.
-                            </div>
+                        <group string="Fechas">
+                            <field name="authorization_date" string="Fecha Autorizacion"/>
+                            <field name="aplica_vencimiento" string="Aplica Vencimiento" readonly="1"/>
+                            <field name="expiration_date" string="Fecha Vencimiento" invisible="not aplica_vencimiento"/>
                         </group>
                     </group>
+
                     <group>
                         <group string="Estado Actual">
-                            <field name="current_number"/>
-                            <field name="next_number"/>
-                            <field name="available_qty"/>
+                            <field name="current_number" string="Ultimo Usado" readonly="1"/>
+                            <field name="next_number" string="Proximo NCF" readonly="1"/>
+                            <field name="usage_percent" string="Uso %" readonly="1" widget="progressbar"/>
                         </group>
-                        <group string="Alertas">
-                            <field name="warning_threshold"/>
+                        <group string="Configuracion">
+                            <field name="warning_threshold" string="Alerta cuando queden"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="traffic_light" invisible="1"/>
                         </group>
                     </group>
                 </sheet>
             </form>
         </field>
     </record>
-    
+
     <!-- Vista Search -->
     <record id="view_ncf_sequence_search" model="ir.ui.view">
         <field name="name">l10n_do_ncf.sequence.search</field>
@@ -86,21 +128,25 @@
                 <field name="name"/>
                 <field name="ncf_type_id"/>
                 <field name="prefix"/>
-              <filter name="active_sequences" string="Activas" domain="[('state', '=', 'active')]"/>
+                <separator/>
+                <filter name="active_sequences" string="Activas" domain="[('state', '=', 'active')]"/>
                 <filter name="draft_sequences" string="Borradores" domain="[('state', '=', 'draft')]"/>
+                <separator/>
+                <filter name="low_stock" string="Stock Bajo" domain="[('traffic_light', 'in', ['yellow', 'red'])]"/>
+                <filter name="critical" string="Criticas" domain="[('traffic_light', '=', 'red')]"/>
+                <separator/>
                 <filter name="expired_sequences" string="Vencidas" domain="[('state', '=', 'expired')]"/>
-                <filter name="with_expiration" string="Con Vencimiento" domain="[('aplica_vencimiento', '=', True)]"/>
-                <filter name="no_expiration" string="Sin Vencimiento" domain="[('aplica_vencimiento', '=', False)]"/>
+                <filter name="depleted_sequences" string="Agotadas" domain="[('state', '=', 'depleted')]"/>
                 <group expand="0" string="Agrupar por">
                     <filter name="group_type" string="Tipo NCF" context="{'group_by': 'ncf_type_id'}"/>
                     <filter name="group_state" string="Estado" context="{'group_by': 'state'}"/>
-                    <filter name="group_company" string="Compañía" context="{'group_by': 'company_id'}"/>
+                    <filter name="group_traffic" string="Semaforo" context="{'group_by': 'traffic_light'}"/>
                 </group>
             </search>
         </field>
     </record>
-    
-    <!-- Acción -->
+
+    <!-- Accion -->
     <record id="action_ncf_sequence" model="ir.actions.act_window">
         <field name="name">Secuencias NCF</field>
         <field name="res_model">l10n_do_ncf.sequence</field>
@@ -108,13 +154,15 @@
         <field name="context">{'search_default_active_sequences': 1}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-                Configure sus secuencias de NCF
+                Configure sus secuencias NCF autorizadas por DGII
             </p>
             <p>
-                Aquí debe registrar los rangos de NCF autorizados por la DGII.
-                Cada secuencia corresponde a un rango específico de números.
+                <strong>Como empezar:</strong><br/>
+                1. Solicite sus secuencias NCF en la Oficina Virtual de DGII<br/>
+                2. Haga clic en "Nuevo" para registrar el rango autorizado<br/>
+                3. Active la secuencia para comenzar a facturar
             </p>
         </field>
     </record>
-    
+
 </odoo>

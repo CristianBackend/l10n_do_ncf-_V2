@@ -4,38 +4,39 @@
               name="NCF"
               parent="account.menu_finance_configuration"
               sequence="50"
-              groups="group_ncf_user"/>
+              groups="l10n_do_ncf.group_ncf_user"/>
 
     <menuitem id="menu_ncf_type"
               name="Tipos de NCF"
               parent="menu_ncf_root"
-              action="action_ncf_type"
+              action="l10n_do_ncf.action_ncf_type"
               sequence="10"
-              groups="group_ncf_manager"/>
+              groups="l10n_do_ncf.group_ncf_manager"/>
 
     <menuitem id="menu_ncf_sequence"
               name="Secuencias NCF"
               parent="menu_ncf_root"
-              action="action_ncf_sequence"
+              action="l10n_do_ncf.action_ncf_sequence"
               sequence="20"
-              groups="group_ncf_manager"/>
+              groups="l10n_do_ncf.group_ncf_manager"/>
 
     <menuitem id="menu_ncf_license"
               name="Licencia NCF"
               parent="menu_ncf_root"
-              action="action_ncf_license_config"
+              action="l10n_do_ncf.action_ncf_license_config_server"
               sequence="30"
-              groups="group_ncf_manager"/>
+              groups="l10n_do_ncf.group_ncf_manager"/>
 
     <menuitem id="menu_dgii_reports"
               name="Reportes DGII"
               parent="account.menu_finance_reports"
               sequence="100"
-              groups="group_ncf_user"/>
+              groups="l10n_do_ncf.group_ncf_user"/>
 
     <menuitem id="menu_dgii_report_wizard"
               name="Generar Reportes (606, 607, 608)"
               parent="menu_dgii_reports"
-              action="action_dgii_report_wizard"
-              sequence="10"/>
+              action="l10n_do_ncf.action_dgii_report_wizard"
+              sequence="10"
+              groups="l10n_do_ncf.group_ncf_user"/>
 </odoo>

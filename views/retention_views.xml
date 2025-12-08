@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ============================================= -->
+    <!-- TIPOS DE RETENCION -->
+    <!-- ============================================= -->
+
+    <record id="view_retention_type_tree" model="ir.ui.view">
+        <field name="name">l10n_do_ncf.retention.type.tree</field>
+        <field name="model">l10n_do_ncf.retention.type</field>
+        <field name="arch" type="xml">
+            <tree string="Tipos de Retención">
+                <field name="sequence" widget="handle"/>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="retention_type"/>
+                <field name="rate"/>
+                <field name="apply_on"/>
+                <field name="partner_type"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_retention_type_form" model="ir.ui.view">
+        <field name="name">l10n_do_ncf.retention.type.form</field>
+        <field name="model">l10n_do_ncf.retention.type</field>
+        <field name="arch" type="xml">
+            <form string="Tipo de Retención">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="Ej: Retención ISR Servicios Profesionales"/>
+                        </h1>
+                    </div>
+
+                    <group>
+                        <group string="Configuración">
+                            <field name="code" placeholder="Ej: ISR_PROF"/>
+                            <field name="retention_type"/>
+                            <field name="rate"/>
+                            <field name="apply_on"/>
+                        </group>
+                        <group string="Aplicabilidad">
+                            <field name="partner_type"/>
+                            <field name="sequence"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+
+                    <group string="Descripción / Base Legal">
+                        <field name="description" nolabel="1"
+                               placeholder="Norma o artículo que establece esta retención..."/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_retention_type" model="ir.actions.act_window">
+        <field name="name">Tipos de Retención</field>
+        <field name="res_model">l10n_do_ncf.retention.type</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- ============================================= -->
+    <!-- WIZARD AGREGAR RETENCION -->
+    <!-- ============================================= -->
+
+    <record id="view_retention_wizard_form" model="ir.ui.view">
+        <field name="name">l10n_do_ncf.retention.wizard.form</field>
+        <field name="model">l10n_do_ncf.retention.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Agregar Retención">
+                <group>
+                    <field name="move_id" readonly="1"/>
+                    <field name="retention_type_id" options="{'no_create': True}"/>
+                </group>
+                <group>
+                    <group>
+                        <field name="base_amount" readonly="1"/>
+                        <field name="itbis_amount" readonly="1"/>
+                    </group>
+                    <group>
+                        <field name="apply_on" readonly="1"/>
+                        <field name="rate" readonly="1"/>
+                    </group>
+                </group>
+                <group>
+                    <group>
+                        <field name="amount_to_retain" readonly="1"/>
+                    </group>
+                    <group>
+                        <field name="retention_amount" readonly="1" class="oe_subtotal_footer_separator"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="action_add" string="Agregar" type="object" class="btn-primary"/>
+                    <button string="Cancelar" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================= -->
+    <!-- MENUS -->
+    <!-- ============================================= -->
+
+    <menuitem id="menu_retention_root"
+              name="Retenciones"
+              parent="l10n_do_ncf.menu_ncf_root"
+              sequence="35"
+              groups="l10n_do_ncf.group_ncf_manager"/>
+
+    <menuitem id="menu_retention_types"
+              name="Tipos de Retención"
+              parent="menu_retention_root"
+              action="action_retention_type"
+              sequence="10"/>
+
+</odoo>

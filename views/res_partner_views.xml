@@ -1,48 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    
-    <!-- Extensión de la vista de contacto -->
+
+    <!-- Formulario de Cliente/Proveedor -->
     <record id="view_partner_form_ncf" model="ir.ui.view">
         <field name="name">res.partner.form.ncf</field>
         <field name="model">res.partner</field>
         <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="priority">100</field>
         <field name="arch" type="xml">
-            
-            <!-- Agregar pestaña de información fiscal RD -->
+
+            <!-- Hacer el campo VAT/RNC mas visible -->
+            <xpath expr="//field[@name='vat']" position="attributes">
+                <attribute name="string">RNC / Cedula</attribute>
+                <attribute name="placeholder">Ingrese RNC o Cedula...</attribute>
+            </xpath>
+
+            <!-- Agregar badge de estado DGII junto al nombre -->
+            <xpath expr="//field[@name='name']" position="after">
+                <span class="badge rounded-pill bg-success ms-2" 
+                      invisible="not l10n_do_rnc_validated">
+                    ✓ DGII Validado
+                </span>
+                <span class="badge rounded-pill bg-warning ms-2" 
+                      invisible="l10n_do_rnc_validated or not vat">
+                    ⏳ Sin validar
+                </span>
+            </xpath>
+
+            <!-- Pestaña Fiscal RD simplificada -->
             <xpath expr="//notebook" position="inside">
-                <page string="Fiscal RD" name="fiscal_rd" 
-                      invisible="country_id.code != 'DO'">
+                <page string="Fiscal RD" name="fiscal_rd">
+                    <div class="alert alert-info" role="alert" invisible="l10n_do_rnc_validated">
+                        <strong>💡 Tip:</strong> Ingrese el RNC/Cedula arriba y los datos se llenaran automaticamente desde DGII.
+                    </div>
+                    
+                    <div class="alert alert-success" role="alert" invisible="not l10n_do_rnc_validated">
+                        <strong>✅ Validado en DGII</strong> - Los datos fueron verificados correctamente.
+                    </div>
+
                     <group>
-                        <group string="Clasificación Fiscal">
-                            <field name="l10n_do_dgii_tax_payer_type"/>
-                            <field name="l10n_do_ncf_type_id" options="{'no_create': True}"/>
+                        <group string="Informacion Fiscal">
+                            <field name="l10n_do_dgii_tax_payer_type" string="Tipo"/>
+                            <field name="l10n_do_dgii_status" string="Estado DGII" readonly="1" 
+                                   invisible="not l10n_do_rnc_validated"/>
                         </group>
-                        <group string="Validación DGII">
-                            <field name="l10n_do_rnc_validated" readonly="1"/>
-                            <field name="l10n_do_rnc_validation_date" readonly="1"/>
-                            <button name="action_validate_rnc" 
-                                    string="Validar RNC/Cédula" 
-                                    type="object" 
-                                    class="btn-secondary"
-                                    invisible="not vat"/>
+                        <group string="Detalles DGII" invisible="not l10n_do_rnc_validated">
+                            <field name="l10n_do_dgii_activity" string="Actividad" readonly="1"/>
+                            <field name="l10n_do_rnc_validation_date" string="Validado el" readonly="1"/>
+                            <field name="l10n_do_rnc_validated" invisible="1"/>
                         </group>
                     </group>
                 </page>
             </xpath>
-            
+
         </field>
     </record>
-    
-    <!-- Agregar campo de tipo contribuyente a la vista de lista -->
+
+    <!-- Lista de Clientes - agregar indicador de validacion -->
     <record id="view_partner_tree_ncf" model="ir.ui.view">
         <field name="name">res.partner.tree.ncf</field>
         <field name="model">res.partner</field>
         <field name="inherit_id" ref="base.view_partner_tree"/>
         <field name="arch" type="xml">
+            <field name="vat" position="attributes">
+                <attribute name="string">RNC</attribute>
+            </field>
             <field name="vat" position="after">
-                <field name="l10n_do_dgii_tax_payer_type" optional="hide"/>
+                <field name="l10n_do_dgii_tax_payer_type" string="Tipo" optional="show"/>
+                <field name="l10n_do_rnc_validated" string="DGII" widget="boolean_toggle" optional="show"/>
             </field>
         </field>
     </record>
-    
+
 </odoo>

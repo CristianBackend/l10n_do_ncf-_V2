@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Plantilla de Email para Recordatorio DGII -->
+    <record id="mail_template_dgii_reminder" model="mail.template">
+        <field name="name">DGII - Recordatorio Mensual de Reportes</field>
+        <field name="model_id" ref="base.model_res_company"/>
+        <field name="subject">Recordatorio: Enviar Reportes DGII antes del 15</field>
+        <field name="email_from">{{ (object.email or user.email_formatted) }}</field>
+        <field name="email_to">{{ object.partner_id.email }}</field>
+        <field name="body_html" type="html">
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+    <div style="background: linear-gradient(135deg, #00599a 0%, #003d6b 100%); padding: 30px; text-align: center;">
+        <h1 style="color: white; margin: 0;">Recordatorio DGII</h1>
+    </div>
+
+    <div style="padding: 30px; background: #f8f9fa;">
+        <p style="font-size: 16px; color: #333;">Estimado(a) <strong>{{ object.partner_id.name or 'Usuario' }}</strong>,</p>
+
+        <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 20px 0;">
+            <strong style="color: #856404;">Recordatorio Importante</strong>
+            <p style="color: #856404; margin: 10px 0 0 0;">
+                Los reportes DGII deben enviarse <strong>antes del dia 15</strong> de cada mes.
+            </p>
+        </div>
+
+        <p style="font-size: 15px; color: #333;">Recuerde generar y enviar los siguientes reportes:</p>
+
+        <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+            <tr style="background: #00599a; color: white;">
+                <th style="padding: 12px; text-align: left;">Formato</th>
+                <th style="padding: 12px; text-align: left;">Descripcion</th>
+            </tr>
+            <tr style="background: #fff;">
+                <td style="padding: 12px; border-bottom: 1px solid #ddd;"><strong>606</strong></td>
+                <td style="padding: 12px; border-bottom: 1px solid #ddd;">Compras de Bienes y Servicios</td>
+            </tr>
+            <tr style="background: #f8f9fa;">
+                <td style="padding: 12px; border-bottom: 1px solid #ddd;"><strong>607</strong></td>
+                <td style="padding: 12px; border-bottom: 1px solid #ddd;">Ventas de Bienes y Servicios</td>
+            </tr>
+            <tr style="background: #fff;">
+                <td style="padding: 12px; border-bottom: 1px solid #ddd;"><strong>608</strong></td>
+                <td style="padding: 12px; border-bottom: 1px solid #ddd;">Comprobantes Anulados</td>
+            </tr>
+            <tr style="background: #f8f9fa;">
+                <td style="padding: 12px;"><strong>609</strong></td>
+                <td style="padding: 12px;">Pagos al Exterior</td>
+            </tr>
+        </table>
+
+        <p style="font-size: 14px; color: #666;">
+            Este es un recordatorio automatico generado por el modulo NCF de Odoo.
+        </p>
+    </div>
+
+    <div style="background: #333; color: #fff; padding: 20px; text-align: center;">
+        <p style="margin: 0; font-size: 13px;">
+            {{ object.name }}<br/>
+            RNC: {{ object.vat or 'No configurado' }}
+        </p>
+    </div>
+</div>
+        </field>
+    </record>
+
+    <!-- Accion Programada (Cron) para enviar recordatorio -->
+    <record id="ir_cron_dgii_reminder" model="ir.cron">
+        <field name="name">DGII: Recordatorio Mensual de Reportes</field>
+        <field name="model_id" ref="base.model_res_company"/>
+        <field name="state">code</field>
+        <field name="code">model.env['l10n_do_ncf.dgii.reminder'].send_monthly_reminder()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">months</field>
+        <field name="numbercall">-1</field>
+        <field name="nextcall">2025-01-10 12:00:00</field>
+        <field name="active">True</field>
+    </record>
+</odoo>
