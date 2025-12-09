@@ -77,9 +77,7 @@ class NcfType(models.Model):
         ('prefix_unique', 'UNIQUE(prefix)', 'El prefijo del NCF debe ser único.'),
     ]
 
-    def name_get(self):
-        result = []
+    @api.depends('prefix', 'name')
+    def _compute_display_name(self):
         for record in self:
-            name = f"[{record.prefix}] {record.name}"
-            result.append((record.id, name))
-        return result
+            record.display_name = f"[{record.prefix}] {record.name}"
