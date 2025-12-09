@@ -56,8 +56,6 @@ class NCFSetupWizard(models.TransientModel):
     alert_email = fields.Char(string='Email para Alertas')
     low_stock_threshold = fields.Integer(string='Alertar cuando queden', default=50,
                                          help='NCF disponibles')
-    enable_currency_update = fields.Boolean(string='Actualizar Tasas Automaticamente',
-                                            default=True)
 
     @api.depends('state', 'company_rnc', 'rnc_validated', 'create_b01', 'create_b02', 'create_b14', 'create_b15')
     def _compute_can_proceed(self):
@@ -196,8 +194,7 @@ class NCFSetupWizard(models.TransientModel):
                         new_seq.action_activate()
 
     def _setup_notifications(self):
-        """Configurar alertas y tasas de cambio"""
-
+        """Configurar alertas"""
         if self.enable_alerts:
             AlertConfig = self.env['l10n_do_ncf.alert.config']
             alert_config = AlertConfig.search([], limit=1)
@@ -220,18 +217,6 @@ class NCFSetupWizard(models.TransientModel):
                         alert_vals['alert_email_ids'] = [(4, user.id)]
 
                 AlertConfig.create(alert_vals)
-
-        if self.enable_currency_update:
-            CurrencyUpdate = self.env['l10n_do_ncf.currency.auto.update']
-            existing = CurrencyUpdate.search([], limit=1)
-
-            if not existing:
-                CurrencyUpdate.create({
-                    'active': True,
-                    'update_usd': True,
-                    'update_eur': True,
-                    'alert_on_failure': True,
-                })
 
     def action_finish(self):
         """Cerrar wizard y mostrar dashboard"""

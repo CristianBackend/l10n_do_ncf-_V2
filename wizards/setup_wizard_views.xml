@@ -121,11 +121,11 @@
                 <div invisible="state != 'step3'" class="p-3">
                     <div class="alert alert-info">
                         <strong>Informacion:</strong>
-                        Configure alertas para no quedarse sin NCF y actualizacion automatica de tasas de cambio.
+                        Configure alertas para no quedarse sin NCF disponibles.
                     </div>
 
                     <group>
-                        <group string="Alertas por Email">
+                        <group string="Alertas de NCF">
                             <field name="enable_alerts" widget="boolean_toggle"/>
                             <field name="alert_email" placeholder="tu@email.com"
                                    invisible="not enable_alerts"/>
@@ -134,13 +134,6 @@
                             <div invisible="not enable_alerts" class="o_row">
                                 <field name="low_stock_threshold" class="oe_inline" style="width: 60px;"/>
                                 <span> NCF disponibles</span>
-                            </div>
-                        </group>
-
-                        <group string="Tasas de Cambio">
-                            <field name="enable_currency_update" widget="boolean_toggle"/>
-                            <div invisible="not enable_currency_update" class="text-muted">
-                                <small>Las tasas USD y EUR se actualizaran automaticamente cada dia a las 6:00 AM</small>
                             </div>
                         </group>
                     </group>
