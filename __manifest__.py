@@ -1,6 +1,6 @@
 {
     'name': 'Republica Dominicana - Comprobantes Fiscales (NCF)',
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'summary': 'Gestion de NCF para Republica Dominicana segun normativa DGII',
     'description': 'Modulo de Comprobantes Fiscales para Republica Dominicana',
     'author': 'NewPlain',
@@ -26,7 +26,6 @@
         'views/menu_views.xml',
         'views/ncf_dashboard_views.xml',
         'views/ncf_alert_views.xml',
-        'views/currency_update_views.xml',
         'views/retention_views.xml',
     ],
     'assets': {
