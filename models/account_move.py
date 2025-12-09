@@ -342,39 +342,6 @@ class AccountMove(models.Model):
 
         return super().action_post()
 
-    def action_post_and_pay(self):
-        """Confirmar factura y abrir wizard de pago"""
-        self.ensure_one()
-        self.action_post()
-        return {
-            'name': _('Registrar Pago'),
-            'type': 'ir.actions.act_window',
-            'res_model': 'account.payment.register',
-            'view_mode': 'form',
-            'target': 'new',
-            'context': {
-                'active_model': 'account.move',
-                'active_ids': self.ids,
-                'default_amount': self.amount_residual,
-                'dont_redirect_to_payments': True,
-            },
-        }
-
-    def action_print_professional(self):
-        """Imprimir factura profesional NCF"""
-        self.ensure_one()
-        return self.env.ref('l10n_do_ncf.action_report_invoice_ncf_professional').report_action(self)
-
-    def action_print_ticket(self):
-        """Imprimir ticket 80mm"""
-        self.ensure_one()
-        return self.env.ref('l10n_do_ncf.action_report_invoice_ncf_ticket').report_action(self)
-
-    def action_print_compact(self):
-        """Imprimir factura compacta"""
-        self.ensure_one()
-        return self.env.ref('l10n_do_ncf.action_report_invoice_ncf_compact').report_action(self)
-
     def _get_ncf_type_from_number(self, ncf):
         """Extraer el tipo de NCF del numero"""
         if ncf and len(ncf) >= 3:

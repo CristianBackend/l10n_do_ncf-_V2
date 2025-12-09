@@ -8,29 +8,6 @@
         <field name="priority">100</field>
         <field name="arch" type="xml">
 
-            <!-- Botones de impresion rapida (ANTES de action_post) -->
-            <xpath expr="//button[@name='action_post']" position="before">
-                <button name="action_print_professional" type="object"
-                        string="Imprimir"
-                        class="btn-primary"
-                        icon="fa-print"
-                        invisible="state == 'draft' or move_type not in ('out_invoice', 'out_refund')"/>
-                <button name="action_print_ticket" type="object"
-                        string="Ticket"
-                        class="btn-secondary"
-                        icon="fa-ticket"
-                        invisible="state == 'draft' or move_type not in ('out_invoice', 'out_refund')"/>
-            </xpath>
-
-            <!-- Boton Confirmar y Cobrar (DESPUES de action_post) -->
-            <xpath expr="//button[@name='action_post']" position="after">
-                <button name="action_post_and_pay" type="object"
-                        string="Confirmar y Cobrar"
-                        class="btn-success"
-                        data-hotkey="shift+c"
-                        invisible="state != 'draft' or move_type not in ('out_invoice', 'out_refund')"/>
-            </xpath>
-
             <!-- NCF visible despues del nombre de la factura -->
             <xpath expr="//div[hasclass('oe_title')]" position="after">
                 <div class="alert alert-success text-center py-2 px-3 mb-3"
