@@ -6,7 +6,6 @@ access_ncf_sequence_manager,l10n_do_ncf.sequence manager,model_l10n_do_ncf_seque
 access_ncf_license_public,l10n_do_ncf.license.config public,model_l10n_do_ncf_license_config,account.group_account_invoice,1,0,0,0
 access_ncf_license_manager,l10n_do_ncf.license.config manager,model_l10n_do_ncf_license_config,account.group_account_manager,1,1,1,1
 access_dgii_report_wizard_public,l10n_do_ncf.dgii.report.wizard public,model_l10n_do_ncf_dgii_report_wizard,account.group_account_invoice,1,1,1,1
-access_ncf_dashboard_public,l10n_do_ncf.dashboard public,model_l10n_do_ncf_dashboard,account.group_account_invoice,1,1,1,1
 access_ncf_alert_public,l10n_do_ncf.alert.config public,model_l10n_do_ncf_alert_config,account.group_account_invoice,1,0,0,0
 access_ncf_alert_manager,l10n_do_ncf.alert.config manager,model_l10n_do_ncf_alert_config,account.group_account_manager,1,1,1,1
 access_retention_type_public,l10n_do_ncf.retention.type public,model_l10n_do_ncf_retention_type,account.group_account_invoice,1,0,0,0
@@ -15,5 +14,3 @@ access_move_retention_public,l10n_do_ncf.move.retention public,model_l10n_do_ncf
 access_retention_wizard_public,l10n_do_ncf.retention.wizard public,model_l10n_do_ncf_retention_wizard,account.group_account_invoice,1,1,1,1
 access_setup_wizard_public,l10n_do_ncf.setup.wizard public,model_l10n_do_ncf_setup_wizard,account.group_account_invoice,1,1,1,1
 access_setup_wizard_manager,l10n_do_ncf.setup.wizard manager,model_l10n_do_ncf_setup_wizard,account.group_account_manager,1,1,1,1
-access_dgii_reminder_public,l10n_do_ncf.dgii.reminder public,model_l10n_do_ncf_dgii_reminder,account.group_account_invoice,1,0,0,0
-access_dgii_reminder_manager,l10n_do_ncf.dgii.reminder manager,model_l10n_do_ncf_dgii_reminder,account.group_account_manager,1,1,1,1

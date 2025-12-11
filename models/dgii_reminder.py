@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 from odoo import models, api, _
 from datetime import date
 import logging
@@ -7,7 +6,7 @@ import logging
 _logger = logging.getLogger(__name__)
 
 
-class DgiiReminder(models.TransientModel):
+class DgiiReminder(models.AbstractModel):
     _name = 'l10n_do_ncf.dgii.reminder'
     _description = 'DGII Monthly Reminder'
 
@@ -25,11 +24,12 @@ class DgiiReminder(models.TransientModel):
             5: 'Mayo', 6: 'Junio', 7: 'Julio', 8: 'Agosto',
             9: 'Septiembre', 10: 'Octubre', 11: 'Noviembre', 12: 'Diciembre'
         }
+        
         month_name = months.get(date.today().month, '')
         
-        message_body = f'''
+        message_body = '''
         <div style="padding: 15px; background: #fff3cd; border-left: 4px solid #ffc107; margin: 10px 0;">
-            <h3 style="color: #856404; margin-top: 0;">⚠️ Recordatorio DGII - {month_name}</h3>
+            <h3 style="color: #856404; margin-top: 0;">Recordatorio DGII - %s</h3>
             <p style="color: #856404;">Los reportes DGII deben enviarse <strong>antes del dia 15</strong>:</p>
             <ul style="color: #856404;">
                 <li><strong>606</strong> - Compras de Bienes y Servicios</li>
@@ -37,11 +37,12 @@ class DgiiReminder(models.TransientModel):
                 <li><strong>608</strong> - Comprobantes Anulados</li>
                 <li><strong>609</strong> - Pagos al Exterior</li>
             </ul>
-            <p style="color: #856404;">Accede a <strong>Contabilidad → Reportes → Reportes DGII</strong> para generarlos.</p>
+            <p style="color: #856404;">Accede a <strong>Contabilidad - Reportes - Reportes DGII</strong> para generarlos.</p>
         </div>
-        '''
+        ''' % month_name
         
         sent_count = 0
+        
         for company in companies:
             try:
                 users = self.env['res.users'].search([
@@ -54,34 +55,20 @@ class DgiiReminder(models.TransientModel):
                 
                 for user in users:
                     if user.partner_id:
-                        # Enviar mensaje al canal de notificaciones del usuario
                         user.partner_id.message_post(
                             body=message_body,
-                            subject=f'Recordatorio: Enviar Reportes DGII - {month_name}',
+                            subject='Recordatorio: Enviar Reportes DGII - %s' % month_name,
                             message_type='notification',
                             subtype_xmlid='mail.mt_note',
                         )
-                        
-                        # Tambien crear notificacion de bandeja
-                        self.env['bus.bus']._sendone(
-                            user.partner_id,
-                            'simple_notification',
-                            {
-                                'title': 'Recordatorio DGII',
-                                'message': f'Los reportes DGII deben enviarse antes del dia 15 de {month_name}',
-                                'type': 'warning',
-                                'sticky': True,
-                            }
-                        )
-                        
                         sent_count += 1
-                        _logger.info(f'Notificacion DGII enviada a {user.name}')
+                        _logger.info('Notificacion DGII enviada a %s' % user.name)
                         
             except Exception as e:
-                _logger.error(f'Error enviando notificacion a {company.name}: {str(e)}')
+                _logger.error('Error enviando notificacion a %s: %s' % (company.name, str(e)))
                 continue
         
-        _logger.info(f'Notificaciones DGII enviadas: {sent_count}')
+        _logger.info('Notificaciones DGII enviadas: %s' % sent_count)
         return True
 
     @api.model
