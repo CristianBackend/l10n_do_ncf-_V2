@@ -71,7 +71,6 @@
         <field name="code">model.env['l10n_do_ncf.dgii.reminder'].send_monthly_reminder()</field>
         <field name="interval_number">1</field>
         <field name="interval_type">months</field>
-        <field name="numbercall">-1</field>
         <field name="nextcall">2025-01-10 12:00:00</field>
         <field name="active">True</field>
     </record>

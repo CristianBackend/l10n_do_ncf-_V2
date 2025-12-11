@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api, _
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
 
 class L10nDoRetentionType(models.Model):
@@ -10,7 +10,7 @@ class L10nDoRetentionType(models.Model):
     _order = 'sequence, code'
 
     name = fields.Char(string='Nombre', required=True)
-    code = fields.Char(string='Código', required=True)
+    code = fields.Char(string='Codigo', required=True)
     sequence = fields.Integer(string='Secuencia', default=10)
 
     retention_type = fields.Selection([
@@ -19,7 +19,7 @@ class L10nDoRetentionType(models.Model):
     ], string='Tipo de Impuesto', required=True)
 
     rate = fields.Float(string='Tasa (%)', required=True,
-                        help='Porcentaje de retención')
+                        help='Porcentaje de retencion')
 
     apply_on = fields.Selection([
         ('base', 'Sobre el monto base (sin ITBIS)'),
@@ -28,17 +28,23 @@ class L10nDoRetentionType(models.Model):
 
     partner_type = fields.Selection([
         ('all', 'Todos'),
-        ('person', 'Solo Personas Físicas'),
+        ('person', 'Solo Personas Fisicas'),
         ('company', 'Solo Empresas'),
     ], string='Aplica a', default='all')
 
-    description = fields.Text(string='Descripción',
+    description = fields.Text(string='Descripcion',
                               help='Normativa o base legal')
     active = fields.Boolean(default=True)
 
-    _sql_constraints = [
-        ('code_unique', 'UNIQUE(code)', 'El código de retención debe ser único'),
-    ]
+    @api.constrains('code')
+    def _check_code_unique(self):
+        for record in self:
+            existing = self.search([
+                ('code', '=', record.code),
+                ('id', '!=', record.id)
+            ])
+            if existing:
+                raise ValidationError(_('El codigo de retencion debe ser unico'))
 
 
 class AccountMoveRetention(models.Model):
@@ -48,7 +54,7 @@ class AccountMoveRetention(models.Model):
     move_id = fields.Many2one('account.move', string='Factura',
                               required=True, ondelete='cascade')
     retention_type_id = fields.Many2one('l10n_do_ncf.retention.type',
-                                        string='Tipo de Retención', required=True)
+                                        string='Tipo de Retencion', required=True)
 
     base_amount = fields.Monetary(string='Monto Base', currency_field='currency_id')
     rate = fields.Float(string='Tasa (%)', related='retention_type_id.rate', store=True)
@@ -70,14 +76,14 @@ class AccountMove(models.Model):
 
     # Campo simplificado: Tipo de Servicio
     l10n_do_service_type = fields.Selection([
-        ('none', 'Sin Retención'),
+        ('none', 'Sin Retencion'),
         ('professional', 'Servicios Profesionales (10% ISR + 30% ITBIS)'),
-        ('technical', 'Servicios Técnicos (2% ISR)'),
-        ('rent_person', 'Alquiler Persona Física (10% ISR)'),
-        ('goods', 'Compra de Bienes (Sin Retención)'),
-        ('manual', 'Configuración Manual'),
+        ('technical', 'Servicios Tecnicos (2% ISR)'),
+        ('rent_person', 'Alquiler Persona Fisica (10% ISR)'),
+        ('goods', 'Compra de Bienes (Sin Retencion)'),
+        ('manual', 'Configuracion Manual'),
     ], string='Tipo de Servicio', default='none',
-       help='Seleccione el tipo de servicio para calcular retenciones automáticamente')
+       help='Seleccione el tipo de servicio para calcular retenciones automaticamente')
 
     # Retenciones
     l10n_do_retention_ids = fields.One2many(
@@ -87,14 +93,14 @@ class AccountMove(models.Model):
     )
 
     l10n_do_total_isr_retention = fields.Monetary(
-        string='Retención ISR',
+        string='Retencion ISR',
         compute='_compute_retention_totals',
         store=True,
         currency_field='currency_id'
     )
 
     l10n_do_total_itbis_retention = fields.Monetary(
-        string='Retención ITBIS',
+        string='Retencion ITBIS',
         compute='_compute_retention_totals',
         store=True,
         currency_field='currency_id'
@@ -126,7 +132,7 @@ class AccountMove(models.Model):
 
     @api.onchange('l10n_do_service_type')
     def _onchange_service_type(self):
-        """Calcular retenciones automáticamente al cambiar tipo de servicio"""
+        """Calcular retenciones automaticamente al cambiar tipo de servicio"""
         if self.move_type not in ('in_invoice', 'in_refund'):
             return
 
@@ -173,16 +179,16 @@ class AccountMove(models.Model):
             self.l10n_do_retention_ids = retentions
 
     def _get_retention_type(self, code):
-        """Obtener ID del tipo de retención por código"""
+        """Obtener ID del tipo de retencion por codigo"""
         retention = self.env['l10n_do_ncf.retention.type'].search([('code', '=', code)], limit=1)
         return retention.id if retention else False
 
     def action_add_retention(self):
-        """Abrir wizard para agregar retención manual"""
+        """Abrir wizard para agregar retencion manual"""
         self.ensure_one()
         return {
             'type': 'ir.actions.act_window',
-            'name': _('Agregar Retención'),
+            'name': _('Agregar Retencion'),
             'res_model': 'l10n_do_ncf.retention.wizard',
             'view_mode': 'form',
             'target': 'new',
@@ -212,11 +218,11 @@ class AccountMove(models.Model):
 
 class RetentionWizard(models.TransientModel):
     _name = 'l10n_do_ncf.retention.wizard'
-    _description = 'Wizard para Agregar Retención'
+    _description = 'Wizard para Agregar Retencion'
 
     move_id = fields.Many2one('account.move', string='Factura', required=True)
     retention_type_id = fields.Many2one('l10n_do_ncf.retention.type',
-                                        string='Tipo de Retención', required=True)
+                                        string='Tipo de Retencion', required=True)
 
     base_amount = fields.Float(string='Monto Base Factura')
     itbis_amount = fields.Float(string='ITBIS Factura')
@@ -226,7 +232,7 @@ class RetentionWizard(models.TransientModel):
 
     amount_to_retain = fields.Float(string='Monto a Aplicar',
                                     compute='_compute_amount_to_retain')
-    retention_amount = fields.Float(string='Retención Calculada',
+    retention_amount = fields.Float(string='Retencion Calculada',
                                     compute='_compute_retention_amount')
 
     @api.depends('retention_type_id', 'base_amount', 'itbis_amount')
@@ -246,7 +252,7 @@ class RetentionWizard(models.TransientModel):
             rec.retention_amount = rec.amount_to_retain * (rec.rate / 100)
 
     def action_add(self):
-        """Agregar la retención a la factura"""
+        """Agregar la retencion a la factura"""
         self.ensure_one()
 
         self.env['l10n_do_ncf.move.retention'].create({
