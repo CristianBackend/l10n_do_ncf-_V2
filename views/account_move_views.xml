@@ -10,7 +10,7 @@
 
             <!-- NCF visible despues del nombre de la factura -->
             <xpath expr="//div[hasclass('oe_title')]" position="after">
-                <div class="alert alert-success text-center py-2 px-3 mb-3"
+                <div class="alert alert-success text-center py-2 px-3 mb-3" role="alert"
                      style="font-size: 1.2em; border-radius: 8px;"
                      invisible="move_type not in ('out_invoice', 'out_refund') or not l10n_do_ncf_number">
                     <strong>NCF:</strong>
@@ -55,7 +55,7 @@
                             invisible="not l10n_do_vendor_ncf or l10n_do_vendor_ncf_validated"/>
                     <span class="badge bg-success ms-2"
                           invisible="not l10n_do_vendor_ncf_validated">
-                        <i class="fa fa-check"/> Validado
+                        Validado
                     </span>
                 </div>
                 <field name="l10n_do_expense_type"

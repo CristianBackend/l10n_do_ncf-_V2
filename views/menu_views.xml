@@ -6,6 +6,13 @@
               sequence="50"
               groups="l10n_do_ncf.group_ncf_user"/>
 
+    <menuitem id="menu_ncf_setup_wizard"
+              name="Configuracion Inicial"
+              parent="menu_ncf_root"
+              action="action_ncf_setup_wizard_server"
+              sequence="1"
+              groups="l10n_do_ncf.group_ncf_manager"/>
+
     <menuitem id="menu_ncf_type"
               name="Tipos de NCF"
               parent="menu_ncf_root"

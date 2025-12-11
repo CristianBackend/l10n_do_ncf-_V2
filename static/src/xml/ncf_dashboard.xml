@@ -19,7 +19,6 @@
                         <div class="col-12">
                             <t t-foreach="state.alerts" t-as="alert" t-key="alert_index">
                                 <div t-attf-class="alert alert-#{alert.type}" role="alert">
-                                    <i t-attf-class="fa #{alert.icon} me-2"/>
                                     <strong t-esc="alert.title"/>: <span t-esc="alert.message"/>
                                 </div>
                             </t>
@@ -39,7 +38,7 @@
                                         <h2 class="mb-0 fw-bold text-dark" t-esc="state.invoices_month"/>
                                     </div>
                                     <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 55px; height: 55px; background-color: rgba(13, 110, 253, 0.15);">
-                                        <i class="fa fa-file-text fa-lg" style="color: #0d6efd;"/>
+                                        <span style="color: #0d6efd; font-size: 1.5em;">&#128196;</span>
                                     </div>
                                 </div>
                             </div>
@@ -55,7 +54,7 @@
                                         <h2 class="mb-0 fw-bold text-dark" t-esc="state.purchases_month"/>
                                     </div>
                                     <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 55px; height: 55px; background-color: rgba(25, 135, 84, 0.15);">
-                                        <i class="fa fa-shopping-cart fa-lg" style="color: #198754;"/>
+                                        <span style="color: #198754; font-size: 1.5em;">&#128722;</span>
                                     </div>
                                 </div>
                             </div>
@@ -71,7 +70,7 @@
                                         <h2 class="mb-0 fw-bold text-dark" t-esc="state.cancelled_month"/>
                                     </div>
                                     <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 55px; height: 55px; background-color: rgba(255, 193, 7, 0.15);">
-                                        <i class="fa fa-ban fa-lg" style="color: #ffc107;"/>
+                                        <span style="color: #ffc107; font-size: 1.5em;">&#128683;</span>
                                     </div>
                                 </div>
                             </div>
@@ -86,24 +85,24 @@
                                         <p class="text-muted mb-1 small text-uppercase">Licencia</p>
                                         <h5 class="mb-0 fw-bold" t-att-class="state.license.is_valid ? 'text-success' : 'text-danger'">
                                             <t t-if="state.license.is_valid">
-                                                <i class="fa fa-check-circle me-1"/> Activa
+                                                Activa
                                             </t>
                                             <t t-else="">
-                                                <i class="fa fa-times-circle me-1"/> Inactiva
+                                                Inactiva
                                             </t>
                                         </h5>
                                         <small class="text-muted" t-if="state.license.is_valid">
-                                            <t t-esc="state.license.days_remaining"/> días restantes
+                                            <t t-esc="state.license.days_remaining"/> dias restantes
                                         </small>
                                     </div>
                                     <t t-if="state.license.is_valid">
                                         <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 55px; height: 55px; background-color: rgba(25, 135, 84, 0.15);">
-                                            <i class="fa fa-shield fa-lg" style="color: #198754;"/>
+                                            <span style="color: #198754; font-size: 1.5em;">&#9989;</span>
                                         </div>
                                     </t>
                                     <t t-else="">
                                         <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 55px; height: 55px; background-color: rgba(220, 53, 69, 0.15);">
-                                            <i class="fa fa-shield fa-lg" style="color: #dc3545;"/>
+                                            <span style="color: #dc3545; font-size: 1.5em;">&#10060;</span>
                                         </div>
                                     </t>
                                 </div>
@@ -119,11 +118,10 @@
                             <div class="card-header bg-white py-3 border-bottom">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <h5 class="mb-0 fw-bold text-dark">
-                                        <i class="fa fa-list-ol me-2" style="color: #0d6efd;"/>
                                         Secuencias NCF Activas
                                     </h5>
                                     <button class="btn btn-sm btn-outline-primary" t-on-click="openSequences">
-                                        Ver todas <i class="fa fa-arrow-right ms-1"/>
+                                        Ver todas
                                     </button>
                                 </div>
                             </div>
@@ -168,10 +166,9 @@
                                 </t>
                                 <t t-else="">
                                     <div class="text-center py-5 text-muted">
-                                        <i class="fa fa-inbox fa-3x mb-3"/>
                                         <p class="mb-2">No hay secuencias NCF activas</p>
                                         <button class="btn btn-primary btn-sm" t-on-click="openSequences">
-                                            <i class="fa fa-plus me-1"/> Crear Secuencia
+                                            Crear Secuencia
                                         </button>
                                     </div>
                                 </t>
@@ -186,45 +183,44 @@
                         <div class="card border-0 shadow-sm">
                             <div class="card-header bg-white py-3 border-bottom">
                                 <h5 class="mb-0 fw-bold text-dark">
-                                    <i class="fa fa-th-large me-2" style="color: #0d6efd;"/>
-                                    Accesos Rápidos
+                                    Accesos Rapidos
                                 </h5>
                             </div>
                             <div class="card-body">
                                 <div class="row g-3">
                                     <div class="col-lg-2 col-md-4 col-6">
                                         <button class="btn btn-outline-primary w-100 py-3" t-on-click="openInvoices">
-                                            <i class="fa fa-file-text d-block mb-2 fa-lg"/>
+                                            <span class="d-block mb-2" style="font-size: 1.5em;">&#128196;</span>
                                             <span class="small">Facturas</span>
                                         </button>
                                     </div>
                                     <div class="col-lg-2 col-md-4 col-6">
                                         <button class="btn btn-outline-success w-100 py-3" t-on-click="openPurchases">
-                                            <i class="fa fa-shopping-cart d-block mb-2 fa-lg"/>
+                                            <span class="d-block mb-2" style="font-size: 1.5em;">&#128722;</span>
                                             <span class="small">Compras</span>
                                         </button>
                                     </div>
                                     <div class="col-lg-2 col-md-4 col-6">
                                         <button class="btn btn-outline-info w-100 py-3" t-on-click="openSequences">
-                                            <i class="fa fa-list-ol d-block mb-2 fa-lg"/>
+                                            <span class="d-block mb-2" style="font-size: 1.5em;">&#128203;</span>
                                             <span class="small">Secuencias</span>
                                         </button>
                                     </div>
                                     <div class="col-lg-2 col-md-4 col-6">
                                         <button class="btn btn-outline-warning w-100 py-3" t-on-click="openReports">
-                                            <i class="fa fa-file-excel-o d-block mb-2 fa-lg"/>
+                                            <span class="d-block mb-2" style="font-size: 1.5em;">&#128200;</span>
                                             <span class="small">Reportes DGII</span>
                                         </button>
                                     </div>
                                     <div class="col-lg-2 col-md-4 col-6">
                                         <button class="btn btn-outline-secondary w-100 py-3" t-on-click="openLicense">
-                                            <i class="fa fa-key d-block mb-2 fa-lg"/>
+                                            <span class="d-block mb-2" style="font-size: 1.5em;">&#128273;</span>
                                             <span class="small">Licencia</span>
                                         </button>
                                     </div>
                                     <div class="col-lg-2 col-md-4 col-6">
                                         <button class="btn btn-outline-dark w-100 py-3" t-on-click="openTypes">
-                                            <i class="fa fa-cog d-block mb-2 fa-lg"/>
+                                            <span class="d-block mb-2" style="font-size: 1.5em;">&#9881;</span>
                                             <span class="small">Tipos NCF</span>
                                         </button>
                                     </div>

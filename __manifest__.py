@@ -15,8 +15,6 @@
         'data/ir_sequence_data.xml',
         'data/retention_data.xml',
         'data/mail_template.xml',
-        'wizards/dgii_report_wizard_views.xml',
-        'wizards/setup_wizard_views.xml',
         'views/license_config_views.xml',
         'views/ncf_type_views.xml',
         'views/ncf_sequence_views.xml',
@@ -27,6 +25,8 @@
         'views/ncf_dashboard_views.xml',
         'views/ncf_alert_views.xml',
         'views/retention_views.xml',
+        'wizards/dgii_report_wizard_views.xml',
+        'wizards/setup_wizard_views.xml',
     ],
     'assets': {
         'web.assets_backend': [

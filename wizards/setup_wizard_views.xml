@@ -39,7 +39,7 @@
 
                 <!-- PASO 1: DATOS EMPRESA -->
                 <div invisible="state != 'step1'" class="p-3">
-                    <div class="alert alert-info">
+                    <div class="alert alert-info" role="alert">
                         <strong>Informacion:</strong>
                         Ingrese el RNC de su empresa para validarlo con la DGII.
                     </div>
@@ -64,7 +64,7 @@
 
                 <!-- PASO 2: SECUENCIAS NCF -->
                 <div invisible="state != 'step2'" class="p-3">
-                    <div class="alert alert-info">
+                    <div class="alert alert-info" role="alert">
                         <strong>Informacion:</strong>
                         Seleccione los tipos de comprobantes que necesita.
                         La mayoria de negocios solo usan B01 y B02.
@@ -112,14 +112,14 @@
                         </group>
                     </group>
 
-                    <div class="alert alert-warning mt-3" invisible="create_b01 or create_b02 or create_b14 or create_b15">
+                    <div class="alert alert-warning mt-3" role="alert" invisible="create_b01 or create_b02 or create_b14 or create_b15">
                         <strong>Atencion:</strong> Debe seleccionar al menos un tipo de comprobante para continuar.
                     </div>
                 </div>
 
                 <!-- PASO 3: NOTIFICACIONES -->
                 <div invisible="state != 'step3'" class="p-3">
-                    <div class="alert alert-info">
+                    <div class="alert alert-info" role="alert">
                         <strong>Informacion:</strong>
                         Configure alertas para no quedarse sin NCF disponibles.
                     </div>
@@ -174,20 +174,11 @@
         </field>
     </record>
 
-    <!-- Primero eliminar la accion anterior -->
-    <delete model="ir.actions.act_window" search="[('id', '=', ref('action_ncf_setup_wizard'))]"/>
-
     <record id="action_ncf_setup_wizard_server" model="ir.actions.server">
         <field name="name">Configuracion Inicial NCF</field>
         <field name="model_id" ref="model_l10n_do_ncf_setup_wizard"/>
         <field name="state">code</field>
         <field name="code">action = env['l10n_do_ncf.setup.wizard'].action_open_setup_wizard()</field>
     </record>
-
-    <menuitem id="menu_ncf_setup_wizard"
-              name="Configuracion Inicial"
-              parent="l10n_do_ncf.menu_ncf_root"
-              action="action_ncf_setup_wizard_server"
-              sequence="1"/>
 
 </odoo>

@@ -10,31 +10,28 @@
                     <button name="action_validate_license"
                             string="Validar Licencia"
                             type="object"
-                            class="btn-primary"
-                            icon="fa-refresh"/>
+                            class="btn-primary"/>
                     <button name="action_buy_license"
                             string="Renovar Licencia"
                             type="object"
                             class="btn-warning"
-                            icon="fa-shopping-cart"
                             invisible="status == 'active' and days_remaining > 7"/>
                     <field name="status" widget="statusbar" statusbar_visible="pending,active,expired"/>
                 </header>
                 <sheet>
                     <!-- Alerta si no hay licencia configurada -->
-                    <div class="alert alert-warning text-center p-4" role="alert" 
+                    <div class="alert alert-warning text-center p-4" role="alert"
                          invisible="license_key and license_key != 'INGRESE-SU-LICENCIA'">
                         <h3 class="alert-heading mb-3">
-                            <i class="fa fa-lock fa-2x mb-2 d-block"/>
                             Licencia Requerida
                         </h3>
                         <p class="mb-3">Para usar el modulo NCF de facturacion fiscal dominicana necesita una licencia activa.</p>
                         <hr/>
                         <div class="mb-3">
-                            <a href="https://node-a1.newplain.com/buy/" 
-                               target="_blank" 
+                            <a href="https://node-a1.newplain.com/buy/"
+                               target="_blank"
                                class="btn btn-success btn-lg">
-                                <i class="fa fa-shopping-cart"/> Comprar Licencia
+                                Comprar Licencia
                             </a>
                         </div>
                         <p class="text-muted small mb-0">
@@ -43,10 +40,9 @@
                     </div>
 
                     <!-- Alerta licencia activa con muchos dias -->
-                    <div class="alert alert-success text-center p-4" role="alert" 
+                    <div class="alert alert-success text-center p-4" role="alert"
                          invisible="status != 'active' or days_remaining &lt;= 7">
                         <h3 class="alert-heading">
-                            <i class="fa fa-check-circle fa-2x mb-2 d-block text-success"/>
                             Licencia Activa
                         </h3>
                         <p class="mb-1">Su licencia esta activa y funcionando correctamente.</p>
@@ -54,41 +50,37 @@
                     </div>
 
                     <!-- Alerta licencia por vencer (7 dias o menos) -->
-                    <div class="alert alert-warning text-center p-4" role="alert" 
+                    <div class="alert alert-warning text-center p-4" role="alert"
                          invisible="status != 'active' or days_remaining > 7">
                         <h3 class="alert-heading">
-                            <i class="fa fa-exclamation-triangle fa-2x mb-2 d-block"/>
                             Licencia Por Vencer
                         </h3>
                         <p class="mb-3">Su licencia vence en <strong><field name="days_remaining" readonly="1" class="d-inline"/> dias</strong>. Renueve ahora para evitar interrupciones.</p>
-                        <a href="https://node-a1.newplain.com/buy/" 
-                           target="_blank" 
+                        <a href="https://node-a1.newplain.com/buy/"
+                           target="_blank"
                            class="btn btn-warning btn-lg">
-                            <i class="fa fa-refresh"/> Renovar Ahora
+                            Renovar Ahora
                         </a>
                     </div>
 
-                    
-                  <!-- Alerta licencia expirada/invalida -->
-                    <div class="alert alert-danger text-center p-4" role="alert" 
+                    <!-- Alerta licencia expirada/invalida -->
+                    <div class="alert alert-danger text-center p-4" role="alert"
                          invisible="status not in ('expired', 'invalid', 'blocked')">
                         <h3 class="alert-heading">
-                            <i class="fa fa-times-circle fa-2x mb-2 d-block"/>
                             Licencia Invalida o Expirada
                         </h3>
                         <p class="mb-3">Su licencia ha expirado o es invalida. El modulo NCF esta deshabilitado.</p>
-                        <a href="https://node-a1.newplain.com/buy/" 
-                           target="_blank" 
+                        <a href="https://node-a1.newplain.com/buy/"
+                           target="_blank"
                            class="btn btn-danger btn-lg">
-                            <i class="fa fa-shopping-cart"/> Renovar Licencia
+                            Renovar Licencia
                         </a>
                     </div>
 
                     <!-- Alerta pendiente de validacion -->
-                    <div class="alert alert-info text-center p-4" role="alert" 
+                    <div class="alert alert-info text-center p-4" role="alert"
                          invisible="status != 'pending' or not license_key or license_key == 'INGRESE-SU-LICENCIA'">
                         <h3 class="alert-heading">
-                            <i class="fa fa-info-circle fa-2x mb-2 d-block"/>
                             Licencia Pendiente
                         </h3>
                         <p class="mb-0">Haga clic en <strong>"Validar Licencia"</strong> para activar su licencia.</p>
@@ -100,7 +92,7 @@
                                    readonly="status == 'active'"/>
                             <field name="company_rnc" string="RNC Empresa" placeholder="123456789"
                                    readonly="status == 'active'"/>
-                            <field name="company_id" groups="base.group_multi_company" 
+                            <field name="company_id" groups="base.group_multi_company"
                                    readonly="status == 'active'"/>
                         </group>
                         <group string="Estado de Licencia" invisible="status == 'pending'">
@@ -112,7 +104,7 @@
 
                     <group string="Informacion de Validacion" invisible="not last_validation">
                         <field name="last_validation" string="Ultima Validacion" readonly="1"/>
-                        <field name="validation_message" string="Mensaje" readonly="1" 
+                        <field name="validation_message" string="Mensaje" readonly="1"
                                invisible="status == 'active'"/>
                     </group>
                 </sheet>
@@ -138,7 +130,7 @@
         </field>
     </record>
 
-    <!-- Acción que abre el registro existente o crea uno nuevo -->
+    <!-- Accion que abre el registro existente o crea uno nuevo -->
     <record id="action_ncf_license_config_server" model="ir.actions.server">
         <field name="name">Abrir Licencia NCF</field>
         <field name="model_id" ref="model_l10n_do_ncf_license_config"/>

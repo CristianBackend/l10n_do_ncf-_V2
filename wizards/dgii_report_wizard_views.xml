@@ -9,10 +9,9 @@
                 <!-- Estado Draft - Formulario de seleccion -->
                 <div invisible="state == 'generated'">
                     <div class="alert alert-info text-center mb-3" role="alert">
-                        <i class="fa fa-info-circle fa-lg me-2"/>
                         <strong>Reportes DGII</strong> - Norma General 07-2018
                     </div>
-                    
+
                     <group>
                         <group string="Configuracion">
                             <field name="company_id" groups="base.group_multi_company"/>
@@ -23,9 +22,8 @@
                             <field name="date_to"/>
                         </group>
                     </group>
-                    
+
                     <div class="alert alert-warning mt-3" role="alert">
-                        <i class="fa fa-exclamation-triangle me-2"/>
                         <strong>Recordatorio:</strong> Los reportes deben enviarse a DGII antes del dia 15 de cada mes.
                     </div>
                 </div>
@@ -34,12 +32,11 @@
                 <div invisible="state != 'generated'">
                     <div class="alert alert-success text-center mb-3" role="alert">
                         <h4 class="alert-heading mb-2">
-                            <i class="fa fa-check-circle fa-lg me-2"/>
                             Reporte Generado Exitosamente
                         </h4>
                         <p class="mb-0">El archivo esta listo para descargar y enviar a DGII.</p>
                     </div>
-                    
+
                     <!-- Resumen del reporte -->
                     <group string="Resumen del Reporte">
                         <group>
@@ -47,13 +44,13 @@
                             <field name="record_count" string="Registros"/>
                         </group>
                         <group>
-                            <field name="total_amount" string="Monto Total" 
+                            <field name="total_amount" string="Monto Total"
                                    invisible="report_type in ('608', 'ir17')"/>
-                            <field name="total_itbis" string="Total ITBIS" 
+                            <field name="total_itbis" string="Total ITBIS"
                                    invisible="report_type in ('608', '609', 'ir17')"/>
                         </group>
                     </group>
-                    
+
                     <!-- Resumen especifico IR-17 -->
                     <group string="Detalle de Retenciones" invisible="report_type != 'ir17'">
                         <group>
@@ -64,41 +61,38 @@
                             <field name="ir17_total" string="TOTAL A PAGAR DGII" class="fw-bold text-primary"/>
                         </group>
                     </group>
-                    
+
                     <field name="currency_id" invisible="1"/>
                 </div>
-                
+
                 <field name="state" invisible="1"/>
                 <field name="report_type" invisible="state == 'generated'"/>
-                
+
                 <footer>
                     <!-- Botones estado Draft -->
-                    <button name="action_generate_report" 
-                            string="Generar Reporte" 
+                    <button name="action_generate_report"
+                            string="Generar Reporte"
                             type="object"
-                            class="btn-primary" 
-                            icon="fa-cogs"
+                            class="btn-primary"
                             invisible="state == 'generated'"/>
-                    <button string="Cancelar" 
-                            class="btn-secondary" 
+                    <button string="Cancelar"
+                            class="btn-secondary"
                             special="cancel"
                             invisible="state == 'generated'"/>
-                    
+
                     <!-- Botones estado Generated -->
-                    <button name="action_download" 
-                            string="Descargar Archivo" 
+                    <button name="action_download"
+                            string="Descargar Archivo"
                             type="object"
-                            class="btn-success" 
-                            icon="fa-download"
+                            class="btn-success"
                             invisible="state != 'generated'"/>
-                    <button name="action_reset" 
-                            string="Generar Otro" 
+                    <button name="action_reset"
+                            string="Generar Otro"
                             type="object"
-                            class="btn-primary" 
-                            icon="fa-refresh"
+                            class="btn-primary"
                             invisible="state != 'generated'"/>
-                    <button string="Cerrar" 
-                            class="btn-secondary" 
+                    <button string="Cerrar"
+                            class="btn-secondary"
                             special="cancel"
                             invisible="state != 'generated'"/>
                 </footer>
