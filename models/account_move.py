@@ -5,6 +5,7 @@ from odoo.exceptions import ValidationError, UserError
 import re
 import requests
 import logging
+import traceback
 
 _logger = logging.getLogger(__name__)
 
@@ -201,6 +202,9 @@ class AccountMove(models.Model):
         for move in self:
             if move.move_type == 'out_refund' and move.state == 'posted':
                 if not move.l10n_do_ncf_origin:
+                    # Saltar en modo demo
+                    if move._is_demo_or_test_mode():
+                        continue
                     raise ValidationError(_(
                         'Las Notas de Credito requieren el NCF Afectado.\n'
                         'Debe indicar el NCF de la factura original que esta modificando.'
@@ -300,21 +304,43 @@ class AccountMove(models.Model):
 
     def _is_demo_or_test_mode(self):
         """Detectar si estamos en modo demo o test"""
-        return (
-            self.env.context.get('install_mode') or
-            self.env.context.get('module') or
-            self.env.context.get('demo') or
-            self.env.context.get('test_mode') or
-            self.env.registry.in_test_mode() if hasattr(self.env.registry, 'in_test_mode') else False
-        )
+        # Verificar contexto
+        if self.env.context.get('install_mode'):
+            _logger.info("NCF: Modo demo detectado por install_mode")
+            return True
+        if self.env.context.get('module'):
+            _logger.info("NCF: Modo demo detectado por module context")
+            return True
+        if self.env.context.get('demo'):
+            _logger.info("NCF: Modo demo detectado por demo context")
+            return True
+        if self.env.context.get('test_mode'):
+            _logger.info("NCF: Modo demo detectado por test_mode")
+            return True
+        if self.env.context.get('load_demo_data'):
+            _logger.info("NCF: Modo demo detectado por load_demo_data")
+            return True
+        # Verificar registry en modo test
+        if hasattr(self.env.registry, 'in_test_mode') and self.env.registry.in_test_mode():
+            _logger.info("NCF: Modo demo detectado por registry.in_test_mode")
+            return True
+        # Verificar stack trace para account_demo
+        stack = traceback.format_stack()
+        stack_str = ''.join(stack)
+        if 'account_demo' in stack_str or '_post_load_demo_data' in stack_str or 'force-demo' in stack_str:
+            _logger.info("NCF: Modo demo detectado por stack trace (account_demo)")
+            return True
+        return False
 
     def action_post(self):
         """Validar licencia y generar NCF al confirmar factura"""
-        is_demo = self._is_demo_or_test_mode()
-
         for move in self:
+            # Saltar validaciones NCF en modo demo
+            if move._is_demo_or_test_mode():
+                continue
+
             if (move.move_type in ('out_invoice', 'out_refund') and
-                move.company_id.country_id.code == 'DO' and not is_demo):
+                move.company_id.country_id.code == 'DO'):
 
                 if move.move_type == 'out_refund' and not move.l10n_do_ncf_origin:
                     raise UserError(_(
