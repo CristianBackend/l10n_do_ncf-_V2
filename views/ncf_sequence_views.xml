@@ -89,31 +89,31 @@
                         </h2>
                     </div>
 
-                    <group>
+                    
                         <group string="Rango Autorizado por DGII">
                             <field name="prefix" string="Serie" readonly="1"/>
                             <field name="range_from" string="Numero Inicial" placeholder="00000001"/>
                             <field name="range_to" string="Numero Final" placeholder="00000500"/>
-                        </group>
+                        
                         <group string="Fechas">
                             <field name="authorization_date" string="Fecha Autorizacion"/>
                             <field name="aplica_vencimiento" string="Aplica Vencimiento" readonly="1"/>
                             <field name="expiration_date" string="Fecha Vencimiento" invisible="not aplica_vencimiento"/>
-                        </group>
-                    </group>
+                        
+                    
 
-                    <group>
+                    
                         <group string="Estado Actual">
                             <field name="current_number" string="Ultimo Usado" readonly="1"/>
                             <field name="next_number" string="Proximo NCF" readonly="1"/>
                             <field name="usage_percent" string="Uso %" readonly="1" widget="progressbar"/>
-                        </group>
+                        
                         <group string="Configuracion">
                             <field name="warning_threshold" string="Alerta cuando queden"/>
                             <field name="company_id" groups="base.group_multi_company"/>
                             <field name="traffic_light" invisible="1"/>
-                        </group>
-                    </group>
+                        
+                    
                 </sheet>
             </form>
         </field>
@@ -137,11 +137,12 @@
                 <separator/>
                 <filter name="expired_sequences" string="Vencidas" domain="[('state', '=', 'expired')]"/>
                 <filter name="depleted_sequences" string="Agotadas" domain="[('state', '=', 'depleted')]"/>
-                <group string="Agrupar por">
+                <separator/>
+                
                     <filter name="group_type" string="Tipo NCF" context="{'group_by': 'ncf_type_id'}"/>
                     <filter name="group_state" string="Estado" context="{'group_by': 'state'}"/>
                     <filter name="group_traffic" string="Semaforo" context="{'group_by': 'traffic_light'}"/>
-                </group>
+                
             </search>
         </field>
     </record>
