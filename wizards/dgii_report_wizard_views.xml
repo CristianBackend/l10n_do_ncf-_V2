@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Vista Form del Wizard -->
     <record id="view_dgii_report_wizard_form" model="ir.ui.view">
         <field name="name">l10n_do_ncf.dgii.report.wizard.form</field>
         <field name="model">l10n_do_ncf.dgii.report.wizard</field>
         <field name="arch" type="xml">
             <form string="Generar Reporte DGII">
-                <!-- Estado Draft - Formulario de seleccion -->
                 <div invisible="state == 'generated'">
-                    <div class="alert alert-info text-center mb-3" role="alert">
+                    <div class="alert alert-info text-center mb-3" role="status">
                         <strong>Reportes DGII</strong> - Norma General 07-2018
                     </div>
 
@@ -23,21 +21,17 @@
                         </group>
                     </group>
 
-                    <div class="alert alert-warning mt-3" role="alert">
+                    <div class="alert alert-warning mt-3" role="status">
                         <strong>Recordatorio:</strong> Los reportes deben enviarse a DGII antes del dia 15 de cada mes.
                     </div>
                 </div>
 
-                <!-- Estado Generated - Resultado -->
                 <div invisible="state != 'generated'">
-                    <div class="alert alert-success text-center mb-3" role="alert">
-                        <h4 class="alert-heading mb-2">
-                            Reporte Generado Exitosamente
-                        </h4>
+                    <div class="alert alert-success text-center mb-3" role="status">
+                        <h4 class="mb-2"><strong>Reporte Generado Exitosamente</strong></h4>
                         <p class="mb-0">El archivo esta listo para descargar y enviar a DGII.</p>
                     </div>
 
-                    <!-- Resumen del reporte -->
                     <group string="Resumen del Reporte">
                         <group>
                             <field name="file_name" string="Archivo" readonly="1"/>
@@ -51,7 +45,6 @@
                         </group>
                     </group>
 
-                    <!-- Resumen especifico IR-17 -->
                     <group string="Detalle de Retenciones" invisible="report_type != 'ir17'">
                         <group>
                             <field name="ir17_total_isr" string="Retencion ISR"/>
@@ -69,38 +62,21 @@
                 <field name="report_type" invisible="state == 'generated'"/>
 
                 <footer>
-                    <!-- Botones estado Draft -->
-                    <button name="action_generate_report"
-                            string="Generar Reporte"
-                            type="object"
-                            class="btn-primary"
+                    <button name="action_generate_report" string="Generar Reporte" type="object"
+                            class="btn-primary" invisible="state == 'generated'"/>
+                    <button string="Cancelar" class="btn-secondary" special="cancel"
                             invisible="state == 'generated'"/>
-                    <button string="Cancelar"
-                            class="btn-secondary"
-                            special="cancel"
-                            invisible="state == 'generated'"/>
-
-                    <!-- Botones estado Generated -->
-                    <button name="action_download"
-                            string="Descargar Archivo"
-                            type="object"
-                            class="btn-success"
-                            invisible="state != 'generated'"/>
-                    <button name="action_reset"
-                            string="Generar Otro"
-                            type="object"
-                            class="btn-primary"
-                            invisible="state != 'generated'"/>
-                    <button string="Cerrar"
-                            class="btn-secondary"
-                            special="cancel"
+                    <button name="action_download" string="Descargar Archivo" type="object"
+                            class="btn-success" invisible="state != 'generated'"/>
+                    <button name="action_reset" string="Generar Otro" type="object"
+                            class="btn-primary" invisible="state != 'generated'"/>
+                    <button string="Cerrar" class="btn-secondary" special="cancel"
                             invisible="state != 'generated'"/>
                 </footer>
             </form>
         </field>
     </record>
 
-    <!-- Accion del Wizard -->
     <record id="action_dgii_report_wizard" model="ir.actions.act_window">
         <field name="name">Generar Reportes DGII</field>
         <field name="res_model">l10n_do_ncf.dgii.report.wizard</field>
