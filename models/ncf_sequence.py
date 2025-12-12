@@ -3,6 +3,9 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError, UserError
 from datetime import date
+import logging
+
+_logger = logging.getLogger(__name__)
 
 
 class NcfSequence(models.Model):
@@ -101,6 +104,60 @@ class NcfSequence(models.Model):
         default=True
     )
 
+    # =====================================================
+    # VALIDACION DE LICENCIA
+    # =====================================================
+    @api.model
+    def _check_license_valid(self):
+        """
+        Verificar si la licencia NCF es válida.
+        Método de modelo (no requiere recordset).
+        """
+        license_config = self.env['l10n_do_ncf.license.config'].sudo().search([
+            ('company_id', '=', self.env.company.id)
+        ], limit=1)
+        
+        if not license_config:
+            raise UserError(_(
+                'Licencia NCF no configurada.\n\n'
+                'Para crear secuencias NCF debe configurar primero su licencia:\n'
+                '1. Vaya a Configuración > NCF > Licencia NCF\n'
+                '2. Ingrese su clave de licencia y RNC\n'
+                '3. Haga clic en "Validar Licencia"'
+            ))
+        
+        if not license_config.is_valid:
+            raise UserError(_(
+                'Licencia NCF no válida o expirada.\n\n'
+                'Estado: %s\n'
+                '%s\n\n'
+                'Debe renovar su licencia para usar las funciones NCF.'
+            ) % (license_config.status, license_config.validation_message or ''))
+        
+        return True
+
+    # =====================================================
+    # CRUD CON VALIDACION DE LICENCIA
+    # =====================================================
+    @api.model_create_multi
+    def create(self, vals_list):
+        """
+        Validar licencia al crear secuencias.
+        Usa @api.model_create_multi según documentación Odoo 19.
+        """
+        self._check_license_valid()
+        return super().create(vals_list)
+
+    def write(self, vals):
+        """Validar licencia al modificar campos críticos de secuencias"""
+        critical_fields = {'range_from', 'range_to', 'ncf_type_id', 'state'}
+        if critical_fields & set(vals.keys()):
+            self._check_license_valid()
+        return super().write(vals)
+
+    # =====================================================
+    # CAMPOS COMPUTADOS
+    # =====================================================
     @api.depends('ncf_type_id', 'range_from', 'range_to')
     def _compute_name(self):
         for record in self:
@@ -134,8 +191,7 @@ class NcfSequence(models.Model):
             if total > 0:
                 used = record.current_number - record.range_from + 1 if record.current_number > 0 else 0
                 record.usage_percent = (used / total) * 100
-                
-                # Si esta agotada o vencida, siempre semaforo rojo
+
                 if record.state in ('depleted', 'expired'):
                     record.traffic_light = 'red'
                 else:
@@ -169,22 +225,16 @@ class NcfSequence(models.Model):
     def _compute_state(self):
         today = date.today()
         for record in self:
-            # Si no tiene rango final configurado, es borrador
             if record.range_to == 0:
                 record.state = 'draft'
-            # Si vencio
             elif record.aplica_vencimiento and record.expiration_date and record.expiration_date < today:
                 record.state = 'expired'
-            # Si se agoto (llego al limite)
             elif record.current_number > 0 and record.current_number >= record.range_to:
                 record.state = 'depleted'
-            # Si tiene rango valido configurado
             elif record.range_to > 0 and record.range_to > record.range_from:
-                # Si ya se ha usado, esta activa
                 if record.current_number > 0:
                     record.state = 'active'
                 else:
-                    # Leer estado actual de BD para mantener activacion manual
                     if record.id:
                         self.env.cr.execute(
                             "SELECT state FROM l10n_do_ncf_sequence WHERE id = %s",
@@ -197,10 +247,12 @@ class NcfSequence(models.Model):
                             record.state = 'draft'
                     else:
                         record.state = 'draft'
-            # Por defecto es borrador
             else:
                 record.state = 'draft'
 
+    # =====================================================
+    # METODOS DE VALIDACION DE RANGOS
+    # =====================================================
     def _get_last_ncf_number_used(self, ncf_type_id, company_id):
         """Obtener el ultimo numero NCF usado de este tipo en facturas"""
         ncf_type = self.env['l10n_do_ncf.type'].browse(ncf_type_id)
@@ -209,7 +261,6 @@ class NcfSequence(models.Model):
 
         prefix = ncf_type.prefix
 
-        # Buscar en facturas
         last_invoice = self.env['account.move'].search([
             ('company_id', '=', company_id),
             ('l10n_do_ncf_number', 'like', prefix + '%'),
@@ -218,9 +269,8 @@ class NcfSequence(models.Model):
 
         if last_invoice and last_invoice.l10n_do_ncf_number:
             try:
-                # Extraer numero: B0100000005 -> 5
                 ncf = last_invoice.l10n_do_ncf_number
-                num_str = ncf[3:]  # Quitar prefijo (B01, B02, etc.)
+                num_str = ncf[3:]
                 return int(num_str)
             except (ValueError, IndexError):
                 pass
@@ -239,7 +289,6 @@ class NcfSequence(models.Model):
         existing_sequences = self.search(domain)
 
         for seq in existing_sequences:
-            # Verificar solapamiento: (nuevo.desde <= viejo.hasta) AND (nuevo.hasta >= viejo.desde)
             if range_from <= seq.range_to and range_to >= seq.range_from:
                 return seq
 
@@ -248,22 +297,17 @@ class NcfSequence(models.Model):
     @api.constrains('range_from', 'range_to', 'ncf_type_id', 'company_id')
     def _check_range(self):
         for record in self:
-            # Validacion basica: rango inicial > 0
             if record.range_from <= 0:
                 raise ValidationError(_('El rango inicial debe ser mayor a 0.'))
 
-            # Si no tiene rango final, saltar otras validaciones (es borrador)
             if record.range_to == 0:
                 continue
 
-            # Validacion: rango final > rango inicial
             if record.range_to <= record.range_from:
                 raise ValidationError(_('El rango final debe ser mayor al rango inicial.'))
 
-            # Obtener prefijo para mensajes de error
             tipo_ncf = record.ncf_type_id.prefix if record.ncf_type_id else 'N/A'
 
-            # VALIDACION #1: No permitir rangos que se solapen con secuencias existentes
             overlapping = self._check_range_overlap(
                 record.ncf_type_id.id,
                 record.company_id.id,
@@ -278,19 +322,16 @@ class NcfSequence(models.Model):
                     'El rango ingresado (Del %s al %s) se solapa con un rango anterior:\n'
                     '- Secuencia: %s\n'
                     '- Rango: Del %s al %s\n\n'
-                    'No se permiten rangos duplicados o superpuestos.\n'
-                    'Esto podria generar NCF duplicados y problemas con DGII.'
+                    'No se permiten rangos duplicados o superpuestos.'
                 ) % (tipo_ncf, record.range_from, record.range_to, overlapping.name,
                      overlapping.range_from, overlapping.range_to))
 
-            # VALIDACION #2: El nuevo rango debe iniciar DESPUES del ultimo NCF emitido
             last_ncf_used = self._get_last_ncf_number_used(
                 record.ncf_type_id.id,
                 record.company_id.id
             )
 
             if last_ncf_used > 0 and record.range_from <= last_ncf_used:
-                # Obtener el ultimo NCF para mostrarlo en el mensaje
                 prefix = record.ncf_type_id.prefix
                 last_ncf_str = f"{prefix}{str(last_ncf_used).zfill(8)}"
 
@@ -299,12 +340,9 @@ class NcfSequence(models.Model):
                     'El rango inicial (%s) debe ser MAYOR al ultimo NCF emitido.\n\n'
                     '- Ultimo NCF generado: %s\n'
                     '- Ultimo numero usado: %s\n'
-                    '- Rango minimo permitido: %s en adelante\n\n'
-                    'No puede usar rangos que contengan numeros ya utilizados.\n'
-                    'Esto causaria NCF duplicados y rechazo en reportes DGII (607).'
+                    '- Rango minimo permitido: %s en adelante'
                 ) % (tipo_ncf, record.range_from, last_ncf_str, last_ncf_used, last_ncf_used + 1))
 
-            # VALIDACION #3: No permitir retrocesos respecto a secuencias anteriores
             max_range = self.search([
                 ('ncf_type_id', '=', record.ncf_type_id.id),
                 ('company_id', '=', record.company_id.id),
@@ -318,13 +356,16 @@ class NcfSequence(models.Model):
                     'El rango inicial (%s) debe ser MAYOR al ultimo rango autorizado.\n\n'
                     '- Ultima secuencia: %s\n'
                     '- Rango anterior: Del %s al %s\n'
-                    '- Nuevo rango debe iniciar en: %s o mayor\n\n'
-                    'Los rangos NCF deben ser siempre consecutivos y ascendentes.'
+                    '- Nuevo rango debe iniciar en: %s o mayor'
                 ) % (tipo_ncf, record.range_from, max_range.name, max_range.range_from,
                      max_range.range_to, max_range.range_to + 1))
 
+    # =====================================================
+    # ACCIONES
+    # =====================================================
     def action_activate(self):
-        """Activar la secuencia manualmente"""
+        """Activar la secuencia manualmente - REQUIERE LICENCIA"""
+        self._check_license_valid()
         for record in self:
             if record.range_to == 0:
                 raise UserError(_('Debe configurar el rango final antes de activar la secuencia.'))
@@ -335,11 +376,13 @@ class NcfSequence(models.Model):
     def get_next_ncf(self):
         """
         Obtener el siguiente NCF de forma SEGURA (thread-safe).
-        Usa FOR UPDATE para bloquear el registro durante la transaccion.
+        REQUIERE LICENCIA VALIDA.
         """
         self.ensure_one()
         
-        # Obtener prefijo para mensajes de error
+        # VALIDAR LICENCIA ANTES DE GENERAR NCF
+        self._check_license_valid()
+
         tipo_ncf = self.ncf_type_id.prefix if self.ncf_type_id else 'N/A'
 
         if self.state == 'expired':
@@ -385,7 +428,7 @@ class NcfSequence(models.Model):
         else:
             ncf = f"{self.prefix}{str(next_num).zfill(8)}"
 
-        # VALIDACION ADICIONAL: Verificar que este NCF no exista ya en facturas
+        # VALIDACION: Verificar que este NCF no exista ya
         existing = self.env['account.move'].search([
             ('l10n_do_ncf_number', '=', ncf),
             ('company_id', '=', self.company_id.id),
@@ -396,11 +439,10 @@ class NcfSequence(models.Model):
             raise UserError(_(
                 'ERROR CRITICO: NCF Duplicado Detectado [%s]\n\n'
                 'El NCF %s ya existe en la factura %s.\n\n'
-                'Esto indica un problema de sincronizacion en las secuencias.\n'
-                'Contacte al administrador del sistema inmediatamente.'
+                'Contacte al administrador del sistema.'
             ) % (tipo_ncf, ncf, existing.name))
 
-        # ACTUALIZAR con SQL directo para garantizar atomicidad
+        # ACTUALIZAR con SQL directo para atomicidad
         self.env.cr.execute("""
             UPDATE l10n_do_ncf_sequence
             SET current_number = %s, write_date = NOW(), write_uid = %s
@@ -417,9 +459,12 @@ class NcfSequence(models.Model):
 
         self.invalidate_recordset(['current_number'])
 
+        _logger.info('NCF generado: %s (secuencia: %s)', ncf, self.name)
+
         return ncf
 
     def action_view_invoices(self):
+        """Ver facturas que usan esta secuencia"""
         self.ensure_one()
         return {
             'type': 'ir.actions.act_window',
