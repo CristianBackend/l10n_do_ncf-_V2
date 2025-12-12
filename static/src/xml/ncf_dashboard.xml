@@ -2,13 +2,13 @@
 <templates xml:space="preserve">
 
     <t t-name="l10n_do_ncf.Dashboard">
-        <div class="o_action" style="height: 100%; overflow: auto;">
-            <div class="container-fluid py-4" style="background: #f4f6f9; min-height: 100%;">
+        <div class="o_action ncf-dashboard">
+            <div class="container-fluid py-3">
 
                 <!-- Header -->
                 <div class="row mb-4">
                     <div class="col-12">
-                        <h3 class="mb-1 text-dark fw-bold">Dashboard NCF</h3>
+                        <h3 class="mb-1 fw-bold">Dashboard NCF</h3>
                         <p class="text-muted mb-0">Panel de Control de Comprobantes Fiscales</p>
                     </div>
                 </div>
@@ -27,82 +27,83 @@
                 </t>
 
                 <!-- Estadisticas principales -->
-                <div class="row mb-4">
+                <div class="row mb-4 g-3">
                     <!-- Facturas del Mes -->
-                    <div class="col-lg-3 col-md-6 mb-3">
-                        <div class="card border-0 shadow-sm h-100">
-                            <div class="card-body">
+                    <div class="col-lg-3 col-md-6">
+                        <div class="card ncf-card h-100">
+                            <div class="card-body ncf-stat-card">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
-                                        <p class="text-muted mb-1 small text-uppercase">Facturas del Mes</p>
-                                        <h2 class="mb-0 fw-bold text-dark" t-esc="state.invoices_month"/>
+                                        <p class="ncf-stat-label text-muted mb-1">Facturas del Mes</p>
+                                        <h2 class="ncf-stat-value mb-0" t-esc="state.invoices_month"/>
                                     </div>
-                                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 55px; height: 55px; background-color: rgba(13, 110, 253, 0.15);">
-                                        <span style="color: #0d6efd; font-size: 1.5em;">&#128196;</span>
+                                    <div class="ncf-icon-circle ncf-icon-primary">
+                                        <span>📄</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+
                     <!-- Compras del Mes -->
-                    <div class="col-lg-3 col-md-6 mb-3">
-                        <div class="card border-0 shadow-sm h-100">
-                            <div class="card-body">
+                    <div class="col-lg-3 col-md-6">
+                        <div class="card ncf-card h-100">
+                            <div class="card-body ncf-stat-card">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
-                                        <p class="text-muted mb-1 small text-uppercase">Compras del Mes</p>
-                                        <h2 class="mb-0 fw-bold text-dark" t-esc="state.purchases_month"/>
+                                        <p class="ncf-stat-label text-muted mb-1">Compras del Mes</p>
+                                        <h2 class="ncf-stat-value mb-0" t-esc="state.purchases_month"/>
                                     </div>
-                                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 55px; height: 55px; background-color: rgba(25, 135, 84, 0.15);">
-                                        <span style="color: #198754; font-size: 1.5em;">&#128722;</span>
+                                    <div class="ncf-icon-circle ncf-icon-success">
+                                        <span>🛒</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+
                     <!-- Anulados -->
-                    <div class="col-lg-3 col-md-6 mb-3">
-                        <div class="card border-0 shadow-sm h-100">
-                            <div class="card-body">
+                    <div class="col-lg-3 col-md-6">
+                        <div class="card ncf-card h-100">
+                            <div class="card-body ncf-stat-card">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
-                                        <p class="text-muted mb-1 small text-uppercase">Anulados</p>
-                                        <h2 class="mb-0 fw-bold text-dark" t-esc="state.cancelled_month"/>
+                                        <p class="ncf-stat-label text-muted mb-1">Anulados</p>
+                                        <h2 class="ncf-stat-value mb-0" t-esc="state.cancelled_month"/>
                                     </div>
-                                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 55px; height: 55px; background-color: rgba(255, 193, 7, 0.15);">
-                                        <span style="color: #ffc107; font-size: 1.5em;">&#128683;</span>
+                                    <div class="ncf-icon-circle ncf-icon-warning">
+                                        <span>🚫</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+
                     <!-- Licencia -->
-                    <div class="col-lg-3 col-md-6 mb-3">
-                        <div class="card border-0 shadow-sm h-100">
-                            <div class="card-body">
+                    <div class="col-lg-3 col-md-6">
+                        <div class="card ncf-card h-100">
+                            <div class="card-body ncf-stat-card">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
-                                        <p class="text-muted mb-1 small text-uppercase">Licencia</p>
-                                        <h5 class="mb-0 fw-bold" t-att-class="state.license.is_valid ? 'text-success' : 'text-danger'">
-                                            <t t-if="state.license.is_valid">
-                                                Activa
-                                            </t>
-                                            <t t-else="">
-                                                Inactiva
-                                            </t>
-                                        </h5>
-                                        <small class="text-muted" t-if="state.license.is_valid">
-                                            <t t-esc="state.license.days_remaining"/> dias restantes
-                                        </small>
+                                        <p class="ncf-stat-label text-muted mb-1">Licencia</p>
+                                        <t t-if="state.license.is_valid">
+                                            <h5 class="mb-0 fw-bold text-success">Activa</h5>
+                                            <small class="text-muted">
+                                                <t t-esc="state.license.days_remaining"/> días restantes
+                                            </small>
+                                        </t>
+                                        <t t-else="">
+                                            <h5 class="mb-0 fw-bold text-danger">Inactiva</h5>
+                                        </t>
                                     </div>
                                     <t t-if="state.license.is_valid">
-                                        <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 55px; height: 55px; background-color: rgba(25, 135, 84, 0.15);">
-                                            <span style="color: #198754; font-size: 1.5em;">&#9989;</span>
+                                        <div class="ncf-icon-circle ncf-icon-success">
+                                            <span>✅</span>
                                         </div>
                                     </t>
                                     <t t-else="">
-                                        <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 55px; height: 55px; background-color: rgba(220, 53, 69, 0.15);">
-                                            <span style="color: #dc3545; font-size: 1.5em;">&#10060;</span>
+                                        <div class="ncf-icon-circle ncf-icon-danger">
+                                            <span>❌</span>
                                         </div>
                                     </t>
                                 </div>
@@ -114,12 +115,10 @@
                 <!-- Secuencias NCF -->
                 <div class="row mb-4">
                     <div class="col-12">
-                        <div class="card border-0 shadow-sm">
-                            <div class="card-header bg-white py-3 border-bottom">
+                        <div class="card ncf-card">
+                            <div class="card-header py-3 border-bottom">
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <h5 class="mb-0 fw-bold text-dark">
-                                        Secuencias NCF Activas
-                                    </h5>
+                                    <h5 class="mb-0 fw-bold">Secuencias NCF Activas</h5>
                                     <button class="btn btn-sm btn-outline-primary" t-on-click="openSequences">
                                         Ver todas
                                     </button>
@@ -127,42 +126,44 @@
                             </div>
                             <div class="card-body p-0">
                                 <t t-if="state.sequences.length > 0">
-                                    <table class="table table-hover mb-0">
-                                        <thead class="bg-light">
-                                            <tr>
-                                                <th class="border-0 py-3 ps-4">Tipo</th>
-                                                <th class="border-0 py-3">Serie</th>
-                                                <th class="border-0 py-3">Disponibles</th>
-                                                <th class="border-0 py-3" style="width: 200px;">Uso</th>
-                                                <th class="border-0 py-3 pe-4">Vencimiento</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <t t-foreach="state.sequences" t-as="seq" t-key="seq.id">
+                                    <div class="table-responsive">
+                                        <table class="table ncf-table mb-0">
+                                            <thead>
                                                 <tr>
-                                                    <td class="py-3 ps-4 fw-bold" t-esc="seq.name"/>
-                                                    <td class="py-3">
-                                                        <span class="badge bg-secondary" t-esc="seq.prefix"/>
-                                                    </td>
-                                                    <td class="py-3">
-                                                        <span t-att-class="'badge ' + (seq.percentage > 50 ? 'bg-success' : (seq.percentage > 20 ? 'bg-warning' : 'bg-danger'))">
-                                                            <t t-esc="seq.available"/> / <t t-esc="seq.total"/>
-                                                        </span>
-                                                    </td>
-                                                    <td class="py-3">
-                                                        <div class="d-flex align-items-center">
-                                                            <div class="progress flex-grow-1" style="height: 8px;">
-                                                                <div t-att-class="'progress-bar ' + (seq.percentage > 50 ? 'bg-success' : (seq.percentage > 20 ? 'bg-warning' : 'bg-danger'))"
-                                                                     t-attf-style="width: #{seq.percentage}%"/>
-                                                            </div>
-                                                            <span class="ms-2 small text-muted"><t t-esc="seq.percentage"/>%</span>
-                                                        </div>
-                                                    </td>
-                                                    <td class="py-3 pe-4 text-muted" t-esc="seq.expiration"/>
+                                                    <th class="ps-4">Tipo</th>
+                                                    <th>Serie</th>
+                                                    <th>Disponibles</th>
+                                                    <th style="width: 200px;">Uso</th>
+                                                    <th class="pe-4">Vencimiento</th>
                                                 </tr>
-                                            </t>
-                                        </tbody>
-                                    </table>
+                                            </thead>
+                                            <tbody>
+                                                <t t-foreach="state.sequences" t-as="seq" t-key="seq.id">
+                                                    <tr>
+                                                        <td class="ps-4 fw-bold" t-esc="seq.name"/>
+                                                        <td>
+                                                            <span class="badge bg-secondary" t-esc="seq.prefix"/>
+                                                        </td>
+                                                        <td>
+                                                            <span t-att-class="'badge ' + (seq.percentage > 50 ? 'bg-success' : (seq.percentage > 20 ? 'bg-warning' : 'bg-danger'))">
+                                                                <t t-esc="seq.available"/> / <t t-esc="seq.total"/>
+                                                            </span>
+                                                        </td>
+                                                        <td>
+                                                            <div class="d-flex align-items-center">
+                                                                <div class="progress flex-grow-1" style="height: 8px;">
+                                                                    <div t-att-class="'progress-bar ' + (seq.percentage > 50 ? 'bg-success' : (seq.percentage > 20 ? 'bg-warning' : 'bg-danger'))"
+                                                                         t-attf-style="width: #{seq.percentage}%"/>
+                                                                </div>
+                                                                <span class="ms-2 small text-muted"><t t-esc="seq.percentage"/>%</span>
+                                                            </div>
+                                                        </td>
+                                                        <td class="pe-4 text-muted" t-esc="seq.expiration"/>
+                                                    </tr>
+                                                </t>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </t>
                                 <t t-else="">
                                     <div class="text-center py-5 text-muted">
@@ -180,47 +181,45 @@
                 <!-- Accesos rapidos -->
                 <div class="row mb-4">
                     <div class="col-12">
-                        <div class="card border-0 shadow-sm">
-                            <div class="card-header bg-white py-3 border-bottom">
-                                <h5 class="mb-0 fw-bold text-dark">
-                                    Accesos Rapidos
-                                </h5>
+                        <div class="card ncf-card">
+                            <div class="card-header py-3 border-bottom">
+                                <h5 class="mb-0 fw-bold">Accesos Rápidos</h5>
                             </div>
                             <div class="card-body">
                                 <div class="row g-3">
                                     <div class="col-lg-2 col-md-4 col-6">
-                                        <button class="btn btn-outline-primary w-100 py-3" t-on-click="openInvoices">
-                                            <span class="d-block mb-2" style="font-size: 1.5em;">&#128196;</span>
+                                        <button class="btn btn-outline-primary w-100 ncf-quick-btn" t-on-click="openInvoices">
+                                            <span class="ncf-btn-icon">📄</span>
                                             <span class="small">Facturas</span>
                                         </button>
                                     </div>
                                     <div class="col-lg-2 col-md-4 col-6">
-                                        <button class="btn btn-outline-success w-100 py-3" t-on-click="openPurchases">
-                                            <span class="d-block mb-2" style="font-size: 1.5em;">&#128722;</span>
+                                        <button class="btn btn-outline-success w-100 ncf-quick-btn" t-on-click="openPurchases">
+                                            <span class="ncf-btn-icon">🛒</span>
                                             <span class="small">Compras</span>
                                         </button>
                                     </div>
                                     <div class="col-lg-2 col-md-4 col-6">
-                                        <button class="btn btn-outline-info w-100 py-3" t-on-click="openSequences">
-                                            <span class="d-block mb-2" style="font-size: 1.5em;">&#128203;</span>
+                                        <button class="btn btn-outline-info w-100 ncf-quick-btn" t-on-click="openSequences">
+                                            <span class="ncf-btn-icon">📋</span>
                                             <span class="small">Secuencias</span>
                                         </button>
                                     </div>
                                     <div class="col-lg-2 col-md-4 col-6">
-                                        <button class="btn btn-outline-warning w-100 py-3" t-on-click="openReports">
-                                            <span class="d-block mb-2" style="font-size: 1.5em;">&#128200;</span>
+                                        <button class="btn btn-outline-warning w-100 ncf-quick-btn" t-on-click="openReports">
+                                            <span class="ncf-btn-icon">📊</span>
                                             <span class="small">Reportes DGII</span>
                                         </button>
                                     </div>
                                     <div class="col-lg-2 col-md-4 col-6">
-                                        <button class="btn btn-outline-secondary w-100 py-3" t-on-click="openLicense">
-                                            <span class="d-block mb-2" style="font-size: 1.5em;">&#128273;</span>
+                                        <button class="btn btn-outline-secondary w-100 ncf-quick-btn" t-on-click="openLicense">
+                                            <span class="ncf-btn-icon">🔑</span>
                                             <span class="small">Licencia</span>
                                         </button>
                                     </div>
                                     <div class="col-lg-2 col-md-4 col-6">
-                                        <button class="btn btn-outline-dark w-100 py-3" t-on-click="openTypes">
-                                            <span class="d-block mb-2" style="font-size: 1.5em;">&#9881;</span>
+                                        <button class="btn btn-outline-dark w-100 ncf-quick-btn" t-on-click="openTypes">
+                                            <span class="ncf-btn-icon">⚙️</span>
                                             <span class="small">Tipos NCF</span>
                                         </button>
                                     </div>
@@ -229,9 +228,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Espacio al final -->
-                <div style="height: 30px;"></div>
 
             </div>
         </div>
