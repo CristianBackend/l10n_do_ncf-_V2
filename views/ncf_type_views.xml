@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    
-    <!-- Vista Tree -->
-    <record id="view_ncf_type_tree" model="ir.ui.view">
-        <field name="name">l10n_do_ncf.type.tree</field>
+
+    <!-- Vista List -->
+    <record id="view_ncf_type_list" model="ir.ui.view">
+        <field name="name">l10n_do_ncf.type.list</field>
         <field name="model">l10n_do_ncf.type</field>
         <field name="arch" type="xml">
-            <tree string="Tipos de NCF">
+            <list string="Tipos de NCF">
                 <field name="prefix"/>
                 <field name="name"/>
                 <field name="code"/>
@@ -16,10 +16,10 @@
                 <field name="for_purchase" widget="boolean"/>
                 <field name="requires_rnc" widget="boolean"/>
                 <field name="active" widget="boolean"/>
-            </tree>
+            </list>
         </field>
     </record>
-    
+
     <!-- Vista Form -->
     <record id="view_ncf_type_form" model="ir.ui.view">
         <field name="name">l10n_do_ncf.type.form</field>
@@ -27,7 +27,7 @@
         <field name="arch" type="xml">
             <form string="Tipo de NCF">
                 <header>
-                    <button string="← Volver al listado" type="action" name="%(action_ncf_type)d" class="btn-secondary"/>
+                    <button string="Volver al listado" type="action" name="%(action_ncf_type)d" class="btn-secondary"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
@@ -41,30 +41,30 @@
                         </h1>
                     </div>
                     <group>
-                        <group string="Información General">
+                        <group string="Informacion General">
                             <field name="name"/>
                             <field name="code"/>
                             <field name="is_electronic"/>
                         </group>
-                        <group string="Configuración">
+                        <group string="Configuracion">
                             <field name="requires_rnc"/>
                             <field name="for_sale"/>
                             <field name="for_purchase"/>
                         </group>
                     </group>
                     <group>
-                        <group string="Configuración de Vencimiento">
+                        <group string="Configuracion de Vencimiento">
                             <field name="aplica_vencimiento"/>
                             <field name="vigencia_anos" invisible="not aplica_vencimiento"/>
                         </group>
                     </group>
-                    <group string="Descripción">
-                        <field name="description" nolabel="1" placeholder="Descripción del uso de este tipo de NCF según normativa DGII..."/>
+                    <group string="Descripcion">
+                        <field name="description" nolabel="1" placeholder="Descripcion del uso de este tipo de NCF segun normativa DGII..."/>
                     </group>
                     <notebook>
                         <page string="Secuencias" name="sequences">
                             <field name="sequence_ids">
-                                <tree string="Secuencias">
+                                <list string="Secuencias">
                                     <field name="name"/>
                                     <field name="range_from"/>
                                     <field name="range_to"/>
@@ -72,7 +72,7 @@
                                     <field name="available_qty"/>
                                     <field name="expiration_date"/>
                                     <field name="state" widget="badge" decoration-success="state == 'active'" decoration-warning="state == 'draft'" decoration-danger="state in ('depleted', 'expired')"/>
-                                </tree>
+                                </list>
                             </field>
                         </page>
                     </notebook>
@@ -80,21 +80,21 @@
             </form>
         </field>
     </record>
-    
-    <!-- Acción -->
+
+    <!-- Accion -->
     <record id="action_ncf_type" model="ir.actions.act_window">
         <field name="name">Tipos de NCF</field>
         <field name="res_model">l10n_do_ncf.type</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Tipos de Comprobantes Fiscales
             </p>
             <p>
-                Los tipos de NCF vienen precargados según la normativa DGII.
-                Aquí puede ver y administrar los tipos disponibles.
+                Los tipos de NCF vienen precargados segun la normativa DGII.
+                Aqui puede ver y administrar los tipos disponibles.
             </p>
         </field>
     </record>
-    
+
 </odoo>

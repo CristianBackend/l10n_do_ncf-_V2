@@ -30,7 +30,8 @@
                         <div class="mb-3">
                             <a href="https://node-a1.newplain.com/buy/"
                                target="_blank"
-                               class="btn btn-success btn-lg">
+                               class="btn btn-success btn-lg"
+                               role="button">
                                 Comprar Licencia
                             </a>
                         </div>
@@ -58,7 +59,8 @@
                         <p class="mb-3">Su licencia vence en <strong><field name="days_remaining" readonly="1" class="d-inline"/> dias</strong>. Renueve ahora para evitar interrupciones.</p>
                         <a href="https://node-a1.newplain.com/buy/"
                            target="_blank"
-                           class="btn btn-warning btn-lg">
+                           class="btn btn-warning btn-lg"
+                           role="button">
                             Renovar Ahora
                         </a>
                     </div>
@@ -72,7 +74,8 @@
                         <p class="mb-3">Su licencia ha expirado o es invalida. El modulo NCF esta deshabilitado.</p>
                         <a href="https://node-a1.newplain.com/buy/"
                            target="_blank"
-                           class="btn btn-danger btn-lg">
+                           class="btn btn-danger btn-lg"
+                           role="button">
                             Renovar Licencia
                         </a>
                     </div>
@@ -112,11 +115,11 @@
         </field>
     </record>
 
-    <record id="view_ncf_license_config_tree" model="ir.ui.view">
-        <field name="name">l10n_do_ncf.license.config.tree</field>
+    <record id="view_ncf_license_config_list" model="ir.ui.view">
+        <field name="name">l10n_do_ncf.license.config.list</field>
         <field name="model">l10n_do_ncf.license.config</field>
         <field name="arch" type="xml">
-            <tree string="Licencias NCF" create="false" delete="false">
+            <list string="Licencias NCF" create="false" delete="false">
                 <field name="license_key"/>
                 <field name="company_rnc" string="RNC"/>
                 <field name="licensed_company_name" string="Empresa"/>
@@ -126,7 +129,7 @@
                        decoration-danger="status in ('expired', 'invalid', 'blocked')"/>
                 <field name="days_remaining" string="Dias"/>
                 <field name="expiration_date" string="Vence"/>
-            </tree>
+            </list>
         </field>
     </record>
 

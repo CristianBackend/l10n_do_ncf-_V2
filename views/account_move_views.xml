@@ -51,7 +51,6 @@
                     <field name="l10n_do_vendor_ncf_validated" invisible="1"/>
                     <button name="action_validate_vendor_ncf" type="object"
                             string="Validar" class="btn-secondary ms-2"
-                            icon="fa-check"
                             invisible="not l10n_do_vendor_ncf or l10n_do_vendor_ncf_validated"/>
                     <span class="badge bg-success ms-2"
                           invisible="not l10n_do_vendor_ncf_validated">
@@ -63,7 +62,7 @@
                        invisible="move_type not in ('in_invoice', 'in_refund')"/>
             </xpath>
 
-            <!-- Pestaña de Retenciones para facturas de proveedor -->
+            <!-- Pestana de Retenciones para facturas de proveedor -->
             <xpath expr="//page[@name='other_info']" position="before">
                 <page string="Retenciones" name="retentions_page"
                       invisible="move_type not in ('in_invoice', 'in_refund')">
@@ -83,30 +82,28 @@
                     <separator string="Detalle de Retenciones"/>
 
                     <field name="l10n_do_retention_ids" nolabel="1">
-                        <tree editable="bottom">
+                        <list editable="bottom">
                             <field name="retention_type_id"/>
                             <field name="base_amount"/>
                             <field name="rate" readonly="1"/>
                             <field name="retention_amount" readonly="1" sum="Total"/>
                             <field name="currency_id" column_invisible="1"/>
-                        </tree>
+                        </list>
                     </field>
 
                     <group class="mt-3">
                         <div>
                             <button name="action_add_retention" type="object"
-                                    string="Agregar Retencion" class="btn-secondary"
-                                    icon="fa-plus"/>
+                                    string="Agregar Retencion" class="btn-secondary"/>
                             <button name="action_clear_retentions" type="object"
                                     string="Limpiar Todo" class="btn-link text-danger"
-                                    icon="fa-trash"
                                     invisible="not l10n_do_retention_ids"/>
                         </div>
                     </group>
                 </page>
             </xpath>
 
-            <!-- Campos adicionales en pestaña Otra info -->
+            <!-- Campos adicionales en pestana Otra info -->
             <xpath expr="//page[@name='other_info']" position="inside">
                 <group string="Informacion Fiscal RD" name="fiscal_rd_group">
                     <group>
@@ -122,8 +119,8 @@
     </record>
 
     <!-- Lista de facturas cliente - NCF visible -->
-    <record id="view_move_tree_ncf" model="ir.ui.view">
-        <field name="name">account.move.tree.ncf</field>
+    <record id="view_move_list_ncf" model="ir.ui.view">
+        <field name="name">account.move.list.ncf</field>
         <field name="model">account.move</field>
         <field name="inherit_id" ref="account.view_out_invoice_tree"/>
         <field name="arch" type="xml">
@@ -134,8 +131,8 @@
     </record>
 
     <!-- Lista de facturas proveedor -->
-    <record id="view_in_invoice_tree_ncf" model="ir.ui.view">
-        <field name="name">account.move.tree.vendor.ncf</field>
+    <record id="view_in_invoice_list_ncf" model="ir.ui.view">
+        <field name="name">account.move.list.vendor.ncf</field>
         <field name="model">account.move</field>
         <field name="inherit_id" ref="account.view_in_invoice_tree"/>
         <field name="arch" type="xml">

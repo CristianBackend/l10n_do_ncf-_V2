@@ -5,11 +5,11 @@
     <!-- TIPOS DE RETENCION -->
     <!-- ============================================= -->
 
-    <record id="view_retention_type_tree" model="ir.ui.view">
-        <field name="name">l10n_do_ncf.retention.type.tree</field>
+    <record id="view_retention_type_list" model="ir.ui.view">
+        <field name="name">l10n_do_ncf.retention.type.list</field>
         <field name="model">l10n_do_ncf.retention.type</field>
         <field name="arch" type="xml">
-            <tree string="Tipos de Retención">
+            <list string="Tipos de Retencion">
                 <field name="sequence" widget="handle"/>
                 <field name="code"/>
                 <field name="name"/>
@@ -18,7 +18,7 @@
                 <field name="apply_on"/>
                 <field name="partner_type"/>
                 <field name="active"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -26,17 +26,17 @@
         <field name="name">l10n_do_ncf.retention.type.form</field>
         <field name="model">l10n_do_ncf.retention.type</field>
         <field name="arch" type="xml">
-            <form string="Tipo de Retención">
+            <form string="Tipo de Retencion">
                 <sheet>
                     <div class="oe_title">
                         <label for="name"/>
                         <h1>
-                            <field name="name" placeholder="Ej: Retención ISR Servicios Profesionales"/>
+                            <field name="name" placeholder="Ej: Retencion ISR Servicios Profesionales"/>
                         </h1>
                     </div>
 
                     <group>
-                        <group string="Configuración">
+                        <group string="Configuracion">
                             <field name="code" placeholder="Ej: ISR_PROF"/>
                             <field name="retention_type"/>
                             <field name="rate"/>
@@ -49,9 +49,9 @@
                         </group>
                     </group>
 
-                    <group string="Descripción / Base Legal">
+                    <group string="Descripcion / Base Legal">
                         <field name="description" nolabel="1"
-                               placeholder="Norma o artículo que establece esta retención..."/>
+                               placeholder="Norma o articulo que establece esta retencion..."/>
                     </group>
                 </sheet>
             </form>
@@ -59,9 +59,9 @@
     </record>
 
     <record id="action_retention_type" model="ir.actions.act_window">
-        <field name="name">Tipos de Retención</field>
+        <field name="name">Tipos de Retencion</field>
         <field name="res_model">l10n_do_ncf.retention.type</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 
     <!-- ============================================= -->
@@ -72,7 +72,7 @@
         <field name="name">l10n_do_ncf.retention.wizard.form</field>
         <field name="model">l10n_do_ncf.retention.wizard</field>
         <field name="arch" type="xml">
-            <form string="Agregar Retención">
+            <form string="Agregar Retencion">
                 <group>
                     <field name="move_id" readonly="1"/>
                     <field name="retention_type_id" options="{'no_create': True}"/>
@@ -114,7 +114,7 @@
               groups="l10n_do_ncf.group_ncf_manager"/>
 
     <menuitem id="menu_retention_types"
-              name="Tipos de Retención"
+              name="Tipos de Retencion"
               parent="menu_retention_root"
               action="action_retention_type"
               sequence="10"/>
