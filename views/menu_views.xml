@@ -34,6 +34,25 @@
               sequence="30"
               groups="l10n_do_ncf.group_ncf_manager"/>
 
+    <menuitem id="menu_retention_root"
+              name="Retenciones"
+              parent="menu_ncf_root"
+              sequence="35"
+              groups="l10n_do_ncf.group_ncf_manager"/>
+
+    <menuitem id="menu_retention_types"
+              name="Tipos de Retencion"
+              parent="menu_retention_root"
+              action="l10n_do_ncf.action_retention_type"
+              sequence="10"/>
+
+    <menuitem id="menu_ncf_alerts"
+              name="Alertas NCF"
+              parent="menu_ncf_root"
+              action="l10n_do_ncf.action_ncf_alert_config"
+              sequence="40"
+              groups="l10n_do_ncf.group_ncf_manager"/>
+
     <menuitem id="menu_dgii_reports"
               name="Reportes DGII"
               parent="account.menu_finance_reports"
@@ -46,4 +65,10 @@
               action="l10n_do_ncf.action_dgii_report_wizard"
               sequence="10"
               groups="l10n_do_ncf.group_ncf_user"/>
+
+    <menuitem id="menu_ncf_dashboard"
+              name="Dashboard NCF"
+              parent="account.menu_finance"
+              action="l10n_do_ncf.action_ncf_dashboard"
+              sequence="1"/>
 </odoo>

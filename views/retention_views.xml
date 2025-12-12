@@ -102,21 +102,4 @@
             </form>
         </field>
     </record>
-
-    <!-- ============================================= -->
-    <!-- MENUS -->
-    <!-- ============================================= -->
-
-    <menuitem id="menu_retention_root"
-              name="Retenciones"
-              parent="l10n_do_ncf.menu_ncf_root"
-              sequence="35"
-              groups="l10n_do_ncf.group_ncf_manager"/>
-
-    <menuitem id="menu_retention_types"
-              name="Tipos de Retencion"
-              parent="menu_retention_root"
-              action="action_retention_type"
-              sequence="10"/>
-
 </odoo>

@@ -95,14 +95,6 @@
         </field>
     </record>
 
-    <!-- Menu -->
-    <menuitem id="menu_ncf_alerts"
-              name="Alertas NCF"
-              parent="l10n_do_ncf.menu_ncf_root"
-              action="action_ncf_alert_config"
-              sequence="40"
-              groups="l10n_do_ncf.group_ncf_manager"/>
-
     <!-- Cron Job -->
     <record id="ir_cron_ncf_alerts" model="ir.cron">
         <field name="name">NCF: Verificar Alertas de Secuencias</field>
