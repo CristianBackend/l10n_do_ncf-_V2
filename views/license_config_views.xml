@@ -25,7 +25,7 @@
                         <p class="mb-3">Para usar el modulo NCF necesita una licencia activa.</p>
                         <div class="mb-3">
                             <a href="https://node-a1.newplain.com/buy/" target="_blank"
-                               class="btn btn-success btn-lg alert-link">Comprar Licencia</a>
+                               role="button" class="btn btn-success btn-lg alert-link">Comprar Licencia</a>
                         </div>
                         <p class="text-muted small mb-0">Ya tienes licencia? Ingresala abajo y haz clic en Validar Licencia</p>
                     </div>
@@ -42,7 +42,7 @@
                         <h3 class="mb-3"><strong>Licencia Por Vencer</strong></h3>
                         <p class="mb-3">Su licencia vence en <strong><field name="days_remaining" readonly="1" class="d-inline"/> dias</strong>.</p>
                         <a href="https://node-a1.newplain.com/buy/" target="_blank"
-                           class="btn btn-warning btn-lg alert-link">Renovar Ahora</a>
+                           role="button" class="btn btn-warning btn-lg alert-link">Renovar Ahora</a>
                     </div>
 
                     <div class="alert alert-danger text-center p-4" role="status"
@@ -50,7 +50,7 @@
                         <h3 class="mb-3"><strong>Licencia Invalida o Expirada</strong></h3>
                         <p class="mb-3">Su licencia ha expirado o es invalida.</p>
                         <a href="https://node-a1.newplain.com/buy/" target="_blank"
-                           class="btn btn-danger btn-lg alert-link">Renovar Licencia</a>
+                           role="button" class="btn btn-danger btn-lg alert-link">Renovar Licencia</a>
                     </div>
 
                     <div class="alert alert-info text-center p-4" role="status"
