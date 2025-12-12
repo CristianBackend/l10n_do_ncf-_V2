@@ -137,7 +137,7 @@
                 <separator/>
                 <filter name="expired_sequences" string="Vencidas" domain="[('state', '=', 'expired')]"/>
                 <filter name="depleted_sequences" string="Agotadas" domain="[('state', '=', 'depleted')]"/>
-                <group expand="0" string="Agrupar por">
+                <group string="Agrupar por">
                     <filter name="group_type" string="Tipo NCF" context="{'group_by': 'ncf_type_id'}"/>
                     <filter name="group_state" string="Estado" context="{'group_by': 'state'}"/>
                     <filter name="group_traffic" string="Semaforo" context="{'group_by': 'traffic_light'}"/>
