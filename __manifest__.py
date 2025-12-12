@@ -21,12 +21,12 @@
         'views/account_move_views.xml',
         'views/res_partner_views.xml',
         'views/res_company_views.xml',
-        'views/menu_views.xml',
         'views/ncf_dashboard_views.xml',
         'views/ncf_alert_views.xml',
         'views/retention_views.xml',
         'wizards/dgii_report_wizard_views.xml',
         'wizards/setup_wizard_views.xml',
+        'views/menu_views.xml',
     ],
     'assets': {
         'web.assets_backend': [
