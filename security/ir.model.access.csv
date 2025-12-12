@@ -14,3 +14,5 @@ access_move_retention_public,l10n_do_ncf.move.retention public,model_l10n_do_ncf
 access_retention_wizard_public,l10n_do_ncf.retention.wizard public,model_l10n_do_ncf_retention_wizard,account.group_account_invoice,1,1,1,1
 access_setup_wizard_public,l10n_do_ncf.setup.wizard public,model_l10n_do_ncf_setup_wizard,account.group_account_invoice,1,1,1,1
 access_setup_wizard_manager,l10n_do_ncf.setup.wizard manager,model_l10n_do_ncf_setup_wizard,account.group_account_manager,1,1,1,1
+access_dgii_reminder_public,l10n_do_ncf.dgii.reminder public,model_l10n_do_ncf_dgii_reminder,account.group_account_invoice,1,0,0,0
+access_dgii_reminder_manager,l10n_do_ncf.dgii.reminder manager,model_l10n_do_ncf_dgii_reminder,account.group_account_manager,1,1,1,1
