@@ -298,23 +298,11 @@ class AccountMove(models.Model):
         })
         return ncf
 
-    def _is_demo_or_test_mode(self):
-        """Detectar si estamos en modo demo o test"""
-        return (
-            self.env.context.get('install_mode') or
-            self.env.context.get('module') or
-            self.env.context.get('demo') or
-            self.env.context.get('test_mode') or
-            self.env.registry.in_test_mode() if hasattr(self.env.registry, 'in_test_mode') else False
-        )
-
     def action_post(self):
         """Validar licencia y generar NCF al confirmar factura"""
-        is_demo = self._is_demo_or_test_mode()
-
         for move in self:
             if (move.move_type in ('out_invoice', 'out_refund') and
-                move.company_id.country_id.code == 'DO' and not is_demo):
+                move.company_id.country_id.code == 'DO'):
 
                 if move.move_type == 'out_refund' and not move.l10n_do_ncf_origin:
                     raise UserError(_(
