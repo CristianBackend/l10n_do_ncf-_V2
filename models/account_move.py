@@ -472,19 +472,37 @@ class AccountMove(models.Model):
 
         rnc = re.sub(r'[^0-9]', '', self.partner_id.vat)
 
+        # Validar RNC del proveedor contra DGII
         try:
-            url = f"http://ncf-api:5000/api/v1/rnc/{rnc}"
-            response = requests.get(url, timeout=10)
-
-            if response.status_code == 200:
-                data = response.json()
-                if data.get('found'):
-                    rnc_status = data.get('status', 'ACTIVO')
-                    if rnc_status != 'ACTIVO':
-                        raise UserError(_('El RNC del proveedor no esta ACTIVO en DGII.'))
-                else:
-                    raise UserError(_('El RNC del proveedor no fue encontrado en DGII.'))
+            # Intentar API local primero
+            try:
+                url = f"http://localhost:5000/api/v1/rnc/{rnc}"
+                response = requests.get(url, timeout=5)
+                if response.status_code == 200:
+                    data = response.json()
+                    if data.get('found'):
+                        rnc_status = data.get('status', 'ACTIVO')
+                        if rnc_status != 'ACTIVO':
+                            raise UserError(_('El RNC del proveedor no esta ACTIVO en DGII.'))
+            except requests.exceptions.RequestException:
+                # Intentar API pública
+                url = "https://rnc.megaplus.com.do/api/consulta"
+                response = requests.post(
+                    url,
+                    json={'rnc': rnc},
+                    timeout=10,
+                    headers={'Content-Type': 'application/json'}
+                )
+                if response.status_code == 200:
+                    data = response.json()
+                    if not data.get('error') and data.get('estado'):
+                        if data.get('estado') != 'ACTIVO':
+                            raise UserError(_('El RNC del proveedor no esta ACTIVO en DGII.'))
+                    elif data.get('error'):
+                        _logger.warning(f"NCF: RNC {rnc} no encontrado en DGII")
         except requests.exceptions.RequestException:
+            # Si falla la conexión, continuar sin validar
+            _logger.warning(f"NCF: No se pudo validar RNC {rnc} - API no disponible")
             pass
 
         existing = self.search([

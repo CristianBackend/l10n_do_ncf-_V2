@@ -4,6 +4,9 @@ from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 import requests
 import re
+import logging
+
+_logger = logging.getLogger(__name__)
 
 
 class NCFSetupWizard(models.TransientModel):
@@ -94,8 +97,49 @@ class NCFSetupWizard(models.TransientModel):
             'target': 'new',
         }
 
+    def _consultar_dgii(self, rnc):
+        """Consultar RNC en DGII - intenta múltiples APIs"""
+        rnc_clean = re.sub(r'[^0-9]', '', rnc)
+        
+        # Intentar API local primero
+        try:
+            url = f"http://localhost:5000/api/v1/rnc/{rnc_clean}"
+            response = requests.get(url, timeout=5)
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('found'):
+                    return {
+                        'found': True,
+                        'name': data.get('name', ''),
+                        'status': data.get('status', ''),
+                    }
+        except:
+            pass
+        
+        # Intentar API pública megaplus
+        try:
+            url = "https://rnc.megaplus.com.do/api/consulta"
+            response = requests.post(
+                url,
+                json={'rnc': rnc_clean},
+                timeout=10,
+                headers={'Content-Type': 'application/json'}
+            )
+            if response.status_code == 200:
+                data = response.json()
+                if not data.get('error') and data.get('nombre_razon_social'):
+                    return {
+                        'found': True,
+                        'name': data.get('nombre_razon_social', ''),
+                        'status': data.get('estado', 'ACTIVO'),
+                    }
+        except Exception as e:
+            _logger.warning(f"NCF: Error consultando API pública: {str(e)}")
+        
+        return {'found': False}
+
     def action_validate_rnc(self):
-        """Validar RNC en DGII usando la API interna"""
+        """Validar RNC en DGII usando la API"""
         self.ensure_one()
 
         if not self.company_rnc:
@@ -107,20 +151,15 @@ class NCFSetupWizard(models.TransientModel):
             raise UserError(_('El RNC debe tener 9 u 11 digitos'))
 
         try:
-            url = f"http://ncf-api:5000/api/v1/rnc/{rnc}"
-            response = requests.get(url, timeout=10)
-
-            if response.status_code == 200:
-                data = response.json()
-                if data.get('found'):
-                    self.company_name_dgii = data.get('name', 'Validado')
-                    self.rnc_validated = True
-                    self.company_id.write({'vat': rnc})
-                    return self._reload_wizard()
-                else:
-                    raise UserError(_('RNC no encontrado en DGII'))
+            data = self._consultar_dgii(rnc)
+            
+            if data.get('found'):
+                self.company_name_dgii = data.get('name', 'Validado')
+                self.rnc_validated = True
+                self.company_id.write({'vat': rnc})
+                return self._reload_wizard()
             else:
-                raise UserError(_('Error consultando DGII. Codigo: %s') % response.status_code)
+                raise UserError(_('RNC no encontrado en DGII'))
 
         except requests.exceptions.RequestException as e:
             raise UserError(_('Error de conexion: %s') % str(e))

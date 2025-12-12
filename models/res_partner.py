@@ -4,6 +4,12 @@ from odoo.exceptions import UserError
 import requests
 import re
 from datetime import datetime
+import logging
+
+_logger = logging.getLogger(__name__)
+
+# URL de la API pública de DGII
+DGII_API_PUBLIC = "https://rnc.megaplus.com.do/api/consulta"
 
 
 class ResPartner(models.Model):
@@ -42,6 +48,97 @@ class ResPartner(models.Model):
         help='Actividad economica registrada en DGII'
     )
 
+    def _get_dgii_api_url(self):
+        """Obtener URL de la API DGII desde configuración o usar default"""
+        # Intentar obtener de parámetros del sistema
+        api_url = self.env['ir.config_parameter'].sudo().get_param(
+            'l10n_do_ncf.dgii_api_url',
+            default=''
+        )
+        if api_url:
+            return api_url
+        
+        # Intentar API local primero (para servidores propios)
+        try:
+            test_response = requests.get('http://localhost:5000/api/v1/rnc/101000783', timeout=2)
+            if test_response.status_code == 200:
+                return 'http://localhost:5000/api/v1/rnc'
+        except:
+            pass
+        
+        # Usar API pública como fallback
+        return 'https://api.indexa.do/api/rnc'
+
+    def _consultar_dgii(self, rnc):
+        """Consultar RNC en DGII - intenta múltiples APIs"""
+        rnc_clean = re.sub(r'[^0-9]', '', rnc)
+        
+        # Lista de APIs a intentar en orden
+        apis = [
+            {
+                'url': f'http://localhost:5000/api/v1/rnc/{rnc_clean}',
+                'parser': self._parse_local_api,
+                'method': 'GET'
+            },
+            {
+                'url': DGII_API_PUBLIC,
+                'parser': self._parse_megaplus_api,
+                'method': 'POST',
+                'data': {'rnc': rnc_clean}
+            },
+        ]
+        
+        for api in apis:
+            try:
+                _logger.info(f"NCF: Intentando consultar RNC {rnc_clean} en {api['url']}")
+                
+                if api.get('method') == 'POST':
+                    response = requests.post(
+                        api['url'], 
+                        json=api.get('data', {}),
+                        timeout=10,
+                        headers={'Content-Type': 'application/json'}
+                    )
+                else:
+                    response = requests.get(api['url'], timeout=10)
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    result = api['parser'](data)
+                    if result.get('found'):
+                        _logger.info(f"NCF: RNC {rnc_clean} encontrado: {result.get('name')}")
+                        return result
+            except Exception as e:
+                _logger.warning(f"NCF: Error consultando {api['url']}: {str(e)}")
+                continue
+        
+        return {'found': False}
+
+    def _parse_local_api(self, data):
+        """Parser para API local (ncf-api)"""
+        if data.get('found'):
+            return {
+                'found': True,
+                'name': data.get('name', ''),
+                'status': data.get('status', ''),
+                'activity': data.get('activity', ''),
+                'regime': data.get('regime', ''),
+            }
+        return {'found': False}
+
+    def _parse_megaplus_api(self, data):
+        """Parser para API de megaplus.com.do"""
+        if not data.get('error') and data.get('nombre_razon_social'):
+            return {
+                'found': True,
+                'name': data.get('nombre_razon_social', ''),
+                'commercial_name': data.get('nombre_comercial', ''),
+                'status': data.get('estado', 'ACTIVO'),
+                'activity': data.get('actividad_economica', ''),
+                'regime': data.get('regimen_de_pagos', ''),
+            }
+        return {'found': False}
+
     @api.model
     def default_get(self, fields_list):
         res = super().default_get(fields_list)
@@ -65,11 +162,9 @@ class ResPartner(models.Model):
         rnc_clean = re.sub(r'[^0-9]', '', rnc)
 
         if len(rnc_clean) == 11:
-            # Cedula - persona fisica contribuyente
             if self.l10n_do_dgii_tax_payer_type not in ('special_regime', 'governmental'):
                 self.l10n_do_dgii_tax_payer_type = 'taxpayer'
         elif len(rnc_clean) == 9:
-            # RNC que empiezan con 4 son gubernamentales
             if rnc_clean.startswith('4'):
                 self.l10n_do_dgii_tax_payer_type = 'governmental'
             elif self.l10n_do_dgii_tax_payer_type not in ('special_regime', 'governmental'):
@@ -78,21 +173,18 @@ class ResPartner(models.Model):
     def _consultar_rnc_dgii(self, rnc):
         """Consultar RNC en la API de DGII"""
         try:
-            url = f"http://ncf-api:5000/api/v1/rnc/{rnc}"
-            response = requests.get(url, timeout=10)
-            if response.status_code == 200:
-                data = response.json()
-                if data.get('found'):
-                    nombre_dgii = data.get('name', '')
-                    if nombre_dgii and not self.name:
-                        self.name = nombre_dgii
-                    self.l10n_do_dgii_status = data.get('status', '')
-                    self.l10n_do_dgii_activity = data.get('activity', '')
-                    self.l10n_do_rnc_validated = True
-                    self.l10n_do_rnc_validation_date = datetime.now()
-                    return True
-        except Exception:
-            pass
+            data = self._consultar_dgii(rnc)
+            if data.get('found'):
+                nombre_dgii = data.get('name', '')
+                if nombre_dgii and not self.name:
+                    self.name = nombre_dgii
+                self.l10n_do_dgii_status = data.get('status', '')
+                self.l10n_do_dgii_activity = data.get('activity', '')
+                self.l10n_do_rnc_validated = True
+                self.l10n_do_rnc_validation_date = datetime.now()
+                return True
+        except Exception as e:
+            _logger.warning(f"NCF: Error en _consultar_rnc_dgii: {str(e)}")
         return False
 
     def action_validate_rnc(self):
@@ -113,56 +205,55 @@ class ResPartner(models.Model):
         rnc = re.sub(r'[^0-9]', '', self.vat)
 
         try:
-            url = f"http://ncf-api:5000/api/v1/rnc/{rnc}"
-            response = requests.get(url, timeout=10)
-            if response.status_code == 200:
-                data = response.json()
-                if data.get('found'):
-                    vals = {
-                        'l10n_do_dgii_status': data.get('status', ''),
-                        'l10n_do_dgii_activity': data.get('activity', ''),
-                        'l10n_do_rnc_validated': True,
-                        'l10n_do_rnc_validation_date': datetime.now(),
+            data = self._consultar_dgii(rnc)
+            
+            if data.get('found'):
+                vals = {
+                    'l10n_do_dgii_status': data.get('status', ''),
+                    'l10n_do_dgii_activity': data.get('activity', ''),
+                    'l10n_do_rnc_validated': True,
+                    'l10n_do_rnc_validation_date': datetime.now(),
+                }
+
+                nombre_dgii = data.get('name', '')
+                if nombre_dgii:
+                    vals['name'] = nombre_dgii
+
+                # Auto-asignar tipo
+                if len(rnc) == 9 and rnc.startswith('4'):
+                    vals['l10n_do_dgii_tax_payer_type'] = 'governmental'
+                elif data.get('status') == 'ACTIVO':
+                    if self.l10n_do_dgii_tax_payer_type not in ('special_regime', 'governmental'):
+                        vals['l10n_do_dgii_tax_payer_type'] = 'taxpayer'
+
+                self.write(vals)
+
+                return {
+                    'type': 'ir.actions.client',
+                    'tag': 'display_notification',
+                    'params': {
+                        'title': _('RNC Validado'),
+                        'message': _('Nombre: %s\nEstado: %s') % (
+                            nombre_dgii,
+                            data.get("status", "")
+                        ),
+                        'type': 'success',
+                        'sticky': False,
                     }
-
-                    nombre_dgii = data.get('name', '')
-                    if nombre_dgii:
-                        vals['name'] = nombre_dgii
-
-                    # Auto-asignar tipo
-                    if len(rnc) == 9 and rnc.startswith('4'):
-                        vals['l10n_do_dgii_tax_payer_type'] = 'governmental'
-                    elif data.get('status') == 'ACTIVO':
-                        if self.l10n_do_dgii_tax_payer_type not in ('special_regime', 'governmental'):
-                            vals['l10n_do_dgii_tax_payer_type'] = 'taxpayer'
-
-                    self.write(vals)
-
-                    return {
-                        'type': 'ir.actions.client',
-                        'tag': 'display_notification',
-                        'params': {
-                            'title': _('RNC Validado'),
-                            'message': _('Nombre: %s\nEstado: %s') % (
-                                nombre_dgii,
-                                data.get("status", "")
-                            ),
-                            'type': 'success',
-                            'sticky': False,
-                        }
+                }
+            else:
+                return {
+                    'type': 'ir.actions.client',
+                    'tag': 'display_notification',
+                    'params': {
+                        'title': _('RNC No Encontrado'),
+                        'message': _('El RNC no fue encontrado en DGII'),
+                        'type': 'warning',
+                        'sticky': False,
                     }
-                else:
-                    return {
-                        'type': 'ir.actions.client',
-                        'tag': 'display_notification',
-                        'params': {
-                            'title': _('RNC No Encontrado'),
-                            'message': _('El RNC no fue encontrado en DGII'),
-                            'type': 'warning',
-                            'sticky': False,
-                        }
-                    }
+                }
         except Exception as e:
+            _logger.error(f"NCF: Error validando RNC: {str(e)}")
             return {
                 'type': 'ir.actions.client',
                 'tag': 'display_notification',
@@ -195,22 +286,19 @@ class ResPartner(models.Model):
             vals['email'] = email
 
         try:
-            url = f"http://ncf-api:5000/api/v1/rnc/{rnc_clean}"
-            response = requests.get(url, timeout=10)
-            if response.status_code == 200:
-                data = response.json()
-                if data.get('found'):
-                    vals['name'] = data.get('name', vals['name'])
-                    vals['l10n_do_dgii_status'] = data.get('status', '')
-                    vals['l10n_do_dgii_activity'] = data.get('activity', '')
-                    vals['l10n_do_rnc_validated'] = True
-                    vals['l10n_do_rnc_validation_date'] = datetime.now()
+            data = self._consultar_dgii(rnc_clean)
+            if data.get('found'):
+                vals['name'] = data.get('name', vals['name'])
+                vals['l10n_do_dgii_status'] = data.get('status', '')
+                vals['l10n_do_dgii_activity'] = data.get('activity', '')
+                vals['l10n_do_rnc_validated'] = True
+                vals['l10n_do_rnc_validation_date'] = datetime.now()
 
-                    if data.get('status') == 'ACTIVO':
-                        vals['l10n_do_dgii_tax_payer_type'] = 'taxpayer'
+                if data.get('status') == 'ACTIVO':
+                    vals['l10n_do_dgii_tax_payer_type'] = 'taxpayer'
 
-                    if len(rnc_clean) == 9 and rnc_clean.startswith('4'):
-                        vals['l10n_do_dgii_tax_payer_type'] = 'governmental'
+                if len(rnc_clean) == 9 and rnc_clean.startswith('4'):
+                    vals['l10n_do_dgii_tax_payer_type'] = 'governmental'
         except Exception:
             pass
 
@@ -220,4 +308,3 @@ class ResPartner(models.Model):
             vals['is_company'] = False
 
         return self.create(vals)
-
