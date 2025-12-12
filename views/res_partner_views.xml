@@ -30,11 +30,11 @@
             <!-- Pestaña Fiscal RD simplificada -->
             <xpath expr="//notebook" position="inside">
                 <page string="Fiscal RD" name="fiscal_rd">
-                    <div class="alert alert-info" role="alert" invisible="l10n_do_rnc_validated">
+                    <div class="alert alert-info" role="status" invisible="l10n_do_rnc_validated">
                         <strong>💡 Tip:</strong> Ingrese el RNC/Cedula arriba y los datos se llenaran automaticamente desde DGII.
                     </div>
                     
-                    <div class="alert alert-success" role="alert" invisible="not l10n_do_rnc_validated">
+                    <div class="alert alert-success" role="status" invisible="not l10n_do_rnc_validated">
                         <strong>✅ Validado en DGII</strong> - Los datos fueron verificados correctamente.
                     </div>
 

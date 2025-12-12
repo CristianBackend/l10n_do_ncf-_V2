@@ -18,7 +18,7 @@
                     <div class="row mb-4">
                         <div class="col-12">
                             <t t-foreach="state.alerts" t-as="alert" t-key="alert_index">
-                                <div t-attf-class="alert alert-#{alert.type}" role="alert">
+                                <div t-attf-class="alert alert-#{alert.type}" role="status">
                                     <strong t-esc="alert.title"/>: <span t-esc="alert.message"/>
                                 </div>
                             </t>

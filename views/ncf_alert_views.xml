@@ -50,7 +50,7 @@
                         </group>
                     </group>
 
-                    <div class="alert alert-info" role="alert">
+                    <div class="alert alert-info" role="status">
                         <strong>Informacion:</strong>
                         <ul>
                             <li>Las alertas se envian automaticamente cada dia</li>

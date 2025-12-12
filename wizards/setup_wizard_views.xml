@@ -39,7 +39,7 @@
 
                 <!-- PASO 1: DATOS EMPRESA -->
                 <div invisible="state != 'step1'" class="p-3">
-                    <div class="alert alert-info" role="alert">
+                    <div class="alert alert-info" role="status">
                         <strong>Informacion:</strong>
                         Ingrese el RNC de su empresa para validarlo con la DGII.
                     </div>
@@ -64,7 +64,7 @@
 
                 <!-- PASO 2: SECUENCIAS NCF -->
                 <div invisible="state != 'step2'" class="p-3">
-                    <div class="alert alert-info" role="alert">
+                    <div class="alert alert-info" role="status">
                         <strong>Informacion:</strong>
                         Seleccione los tipos de comprobantes que necesita.
                         La mayoria de negocios solo usan B01 y B02.
@@ -112,14 +112,14 @@
                         </group>
                     </group>
 
-                    <div class="alert alert-warning mt-3" role="alert" invisible="create_b01 or create_b02 or create_b14 or create_b15">
+                    <div class="alert alert-warning mt-3" role="status" invisible="create_b01 or create_b02 or create_b14 or create_b15">
                         <strong>Atencion:</strong> Debe seleccionar al menos un tipo de comprobante para continuar.
                     </div>
                 </div>
 
                 <!-- PASO 3: NOTIFICACIONES -->
                 <div invisible="state != 'step3'" class="p-3">
-                    <div class="alert alert-info" role="alert">
+                    <div class="alert alert-info" role="status">
                         <strong>Informacion:</strong>
                         Configure alertas para no quedarse sin NCF disponibles.
                     </div>

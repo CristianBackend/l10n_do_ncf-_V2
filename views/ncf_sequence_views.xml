@@ -39,7 +39,7 @@
                     <field name="state" widget="statusbar" statusbar_visible="draft,active,depleted,expired"/>
                 </header>
                 <sheet>
-                    <div class="alert alert-info" role="alert" invisible="state != 'draft'">
+                    <div class="alert alert-info" role="status" invisible="state != 'draft'">
                         <h4>Como obtener secuencias NCF de la DGII:</h4>
                         <ol>
                             <li>Ingrese a la <strong>Oficina Virtual DGII</strong> (dgii.gov.do)</li>
@@ -50,26 +50,26 @@
                         </ol>
                     </div>
 
-                    <div class="alert alert-success" role="alert" invisible="state != 'active' or traffic_light != 'green'">
+                    <div class="alert alert-success" role="status" invisible="state != 'active' or traffic_light != 'green'">
                         <strong>Secuencia OK</strong> -
                         Disponibles: <field name="available_qty" class="oe_inline" readonly="1"/> NCF
                     </div>
 
-                    <div class="alert alert-warning" role="alert" invisible="state != 'active' or traffic_light != 'yellow'">
+                    <div class="alert alert-warning" role="status" invisible="state != 'active' or traffic_light != 'yellow'">
                         <strong>Atencion</strong> -
                         Quedan solo <field name="available_qty" class="oe_inline" readonly="1"/> NCF disponibles. Considere solicitar mas a la DGII.
                     </div>
 
-                    <div class="alert alert-danger" role="alert" invisible="state != 'active' or traffic_light != 'red'">
+                    <div class="alert alert-danger" role="status" invisible="state != 'active' or traffic_light != 'red'">
                         <strong>Urgente</strong> -
                         Solo quedan <field name="available_qty" class="oe_inline" readonly="1"/> NCF. Solicite mas a la DGII inmediatamente.
                     </div>
 
-                    <div class="alert alert-danger" role="alert" invisible="state != 'depleted'">
+                    <div class="alert alert-danger" role="status" invisible="state != 'depleted'">
                         <strong>Secuencia Agotada</strong> - Debe solicitar una nueva secuencia a la DGII.
                     </div>
 
-                    <div class="alert alert-warning" role="alert" invisible="state != 'expired'">
+                    <div class="alert alert-warning" role="status" invisible="state != 'expired'">
                         <strong>Secuencia Vencida</strong> - Esta secuencia ha expirado.
                     </div>
 
